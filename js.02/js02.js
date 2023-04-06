@@ -42,3 +42,13 @@ let green = +prompt ("А по зеленому?");
 let blue = +prompt ("Не забудь про синій");
 let css = ((red.toString(16).padStart(2,0)) + (green.toString(16).padStart(2,0)) + (blue.toString(16).padStart(2,0)));
 alert ("#" + css);
+
+
+let floors = prompt ("Скільки поверхів у будинку?");
+let flatFloorNumber = prompt ("Скільки квартир на поверсі?");
+let flatNumber = prompt ("Який номер квартири?");
+
+let flatPerEntrance = (floors * flatFloorNumber);
+let entranceNumber = Math.ceil ((flatNumber - 1) / flatPerEntrance) + 1;
+let floorNumber = Math.ceil((flatNumber - 1) % flatPerEntrance / flatFloorNumber) + 1 ;
+alert ("Квартира номер " + flatNumber + " знаходиться на " + floorNumber + " поверсі " + entranceNumber + " під'їзду");
