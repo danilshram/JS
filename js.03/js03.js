@@ -65,3 +65,23 @@
     let result = str.slice(0, tagStart) + tag.toUpperCase() + str.slice(tagEnd);
     console.log(result);
 }
+
+
+
+{
+    let str = prompt("Введіть щось");
+    let str2 = str.split("\\n").join("\n");
+    console.log(str2);
+}
+
+
+
+
+{
+    let userLink = prompt("Введіть посилання");
+    const regularLink = /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([\w\-_]+)\&?/;
+    let found = userLink.match(regularLink);
+    let identificator = found[1];
+    let html = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${identificator}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+    document.write(html);
+}
