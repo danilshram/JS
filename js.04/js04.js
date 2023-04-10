@@ -198,3 +198,26 @@ confirm ("Шопінг?") || alert("ти бяка");
     }
     console.log(exchange)
 }
+
+
+{
+    let userChoose = prompt("Введіть ваш варіант: камінь/ножиці/папір");
+    let computerChoose = ["камінь", "ножиці", "папір"];
+    let choiceProgram = Math.ceil(Math.random() * computerChoose.length)
+    if (computerChoose[choiceProgram] === userChoose) {
+        alert("Нічия")
+    }
+ else if (
+    (computerChoose[choiceProgram] === "камінь" && userChoose === "ножиці") ||
+    (computerChoose[choiceProgram] === "ножиці" && userChoose === "папір") ||
+    (computerChoose[choiceProgram] === "папір" && userChoose === "камінь")
+  ) {
+    alert("Комп'ютер переміг");
+  } else if (
+    (computerChoose[choiceProgram] === "камінь" && userChoose === "папір") ||
+    (computerChoose[choiceProgram] === "ножиці" && userChoose === "камінь") ||
+    (computerChoose[choiceProgram] === "папір" && userChoose === "ножиці")
+  ) {
+    alert("Юзер переміг");
+  }
+}
