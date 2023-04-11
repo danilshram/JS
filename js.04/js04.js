@@ -20,13 +20,7 @@
     let firstBadWord = user.includes("блять");
     let secondBadWord = user.includes ("сука");
     let thirdBadWord = user.includes ("жопа");
-    if(firstBadWord) {
-        alert ("Просив же без некоректних слів")
-    }
-    if(secondBadWord) {
-        alert ("Просив же без некоректних слів")
-    }
-    if(thirdBadWord) {
+    if(firstBadWord, secondBadWord, thirdBadWord) {
         alert ("Просив же без некоректних слів")
     }
 }
@@ -115,9 +109,8 @@ Math.random() < 0.5 && 'less' || 'more' // якщо 0.5 > mathRandom, то за�
 
 {
 let age = prompt("Скільки вам років?");
-if (age === null || age === "") {
-    alert ("Ви не ввели свій вік")
-}
+age === null || alert("Ви не ввели свій вік");
+age === "" || alert("Ви не ввели свій вік");
 }
 {
 confirm ("Шопінг?") || alert("ти бяка");
@@ -211,13 +204,11 @@ confirm ("Шопінг?") || alert("ти бяка");
     (computerChoose[choiceProgram] === "камінь" && userChoose === "ножиці") ||
     (computerChoose[choiceProgram] === "ножиці" && userChoose === "папір") ||
     (computerChoose[choiceProgram] === "папір" && userChoose === "камінь")
-  ) {
+  )
+   {
     alert("Комп'ютер переміг");
-  } else if (
-    (computerChoose[choiceProgram] === "камінь" && userChoose === "папір") ||
-    (computerChoose[choiceProgram] === "ножиці" && userChoose === "камінь") ||
-    (computerChoose[choiceProgram] === "папір" && userChoose === "ножиці")
-  ) {
+  } 
+  else {
     alert("Юзер переміг");
   }
 }

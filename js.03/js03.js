@@ -21,7 +21,7 @@
 {
     let string = prompt("Введіть рядок");
     let stringLength = string.split(" ");
-    alert (`В рядку ${stringLength.length} символів`);
+    alert (`В рядку ${stringLength.length} слів`);
 }
 
 
@@ -41,7 +41,10 @@
 
 {
     let str = "Було жарко. Василь пив пиво вприкуску з креветками";
-    let result = str.replace ('пиво', 'чай') ;
+    let index = str.indexOf("пиво");
+    let strStart = str.slice(0, index);
+    let strEnd = str.slice(index + 4);
+    let result = strStart + "чай" + strEnd;
     console.log(result);
 }
 
