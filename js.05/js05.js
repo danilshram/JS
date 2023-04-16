@@ -87,3 +87,26 @@
 
 const copyMultiplicationTable = [...multiplicationTable];
 console.log(copyMultiplicationTable)
+
+{
+    copyMultiplicationTable = JSON.parse(JSON.stringify(multiplicationTable));
+}
+
+
+{
+    let arr = [1, 2, 3, 4, 5];
+    const arr2 = arr
+    console.log(arr === arr2)
+}
+
+{
+    const multiplicationTable2 = [...multiplicationTable[0], ...multiplicationTable[1], ...multiplicationTable[2], ...multiplicationTable[3], ...multiplicationTable[4], ...multiplicationTable[5], ...multiplicationTable[6], ...multiplicationTable[7], ...multiplicationTable[8], ...multiplicationTable[9]];
+    console.log(multiplicationTable2)
+}
+
+// {
+//     const word = prompt("Введіть слово");
+//     let arr = word.split('')
+//     const [a,,,,b,,,,c] = arr
+//     console.log(arr)
+// } НЕ ДОРОБЛЕНО
