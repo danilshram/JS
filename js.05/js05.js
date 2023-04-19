@@ -171,8 +171,76 @@ console.log(copyMultiplicationTable)
     const names = ["John", "Paul", "George", "Ringo"]
     let   str = "<table>"
     for (const name of names){
-        str += name + `\n`
+        str += `<br>${name}</br>`
     }
     str+= "</table>"
     document.write(str)
 }
+
+
+{
+    const currencies = ["USD", "EUR", "GBP", "UAH"]
+    let   str = "<table>"
+    for (let currency of currencies){ 
+        str += `<br></br>`
+        console.log(currency)
+        for (let letter of currency){ 
+            str += letter + " "
+            console.log(letter)
+        }
+    }
+    str+= "</table>"
+    document.write(str)
+}
+
+
+{
+    let multiplicationTable = [
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        [0, 2, 4, 6, 8, 10, 12, 14, 16, 18],
+        [0, 3, 6, 9, 12, 15, 18, 21, 24, 27],
+        [0, 4, 8, 12, 16, 20, 24, 28, 32, 36],
+        [0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
+        [0, 6, 12, 18, 24, 30, 36, 42, 48, 54],
+        [0, 7, 14, 21, 28, 35, 42, 49, 56, 63],
+        [0, 8, 16, 24, 32, 40, 48, 56, 64, 72],
+        [0, 9, 18, 27, 36, 45, 54, 63, 72, 81]
+        ];
+    let str = "<table>"
+    for (let numbers of multiplicationTable){
+        str += `<br></br>`
+        console.log(numbers)
+        for (let one of numbers) {
+        str += one + ` `
+        console.log(one)
+        }
+    }
+    str += "</table>"
+    document.write(str)
+}
+{
+    const capitalize = str => {
+        let result = str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase()
+        return result 
+    }
+    console.log(capitalize("cANBerRa"))
+}
+
+
+{
+    let string = prompt("Введіть строку");
+    let arr = string.split(" ");
+    const arr2 = arr.map(x=> x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase())
+    const arr3 = arr2.toString()
+    console.log(arr3)
+} 
+
+
+// {
+//     let answer = prompt("Введіть строку");
+//     let arr = answer.split(" ");
+//     let badWords = [`shit`, `fuck`, `bitch`]
+//     let arr2 = arr.filter((i)=> i !== badWords.includes())
+//     let arr3 = arr2.toString()
+//     console.log(arr3)
+// } НЕ ДОРОБЛЕНО
