@@ -236,11 +236,11 @@ console.log(copyMultiplicationTable)
 } 
 
 
-// {
-//     let answer = prompt("Введіть строку");
-//     let arr = answer.split(" ");
-//     let badWords = [`shit`, `fuck`, `bitch`]
-//     let arr2 = arr.filter((i)=> i !== badWords.includes())
-//     let arr3 = arr2.toString()
-//     console.log(arr3)
-// } НЕ ДОРОБЛЕНО
+{
+    let answer = prompt("Введіть строку");
+    let arr = answer.split(" ");
+    let badWords = [`shit`, `fuck`, `bitch`]
+    let arr2 = arr.filter(x => !badWords.includes(x))
+    let arr3 = arr2.toString()
+    console.log(arr3)
+} 
