@@ -244,3 +244,35 @@ console.log(copyMultiplicationTable)
     let arr3 = arr2.toString()
     console.log(arr3)
 } 
+
+{
+    let words = prompt("Введіть рядок")
+    let arr = words.split(" ")
+    let badWords = [`shit`, `fuck`, `bitch`]
+    let arr2 = arr.map(x => !badWords.includes(x) ? x : x = 'beep')
+    let arr3 = arr2.join(' ').toString()
+    console.log(arr3)
+}
+
+
+{
+    const currencies = ["USD", "EUR", "GBP", "UAH"]
+    let str = "<select>"
+    str += currencies.reduce( (a,b) => (a + `<option>${a,b}</option>` + '' + b))
+    str += "</select>"
+    document.write(str)
+}
+
+// {
+// const line = prompt()
+// const bracketsStack = []
+// let   i  = 0
+// for (const character of line){
+
+//     if (character !== bracketsStack) {
+//          break; 
+//     }
+//     i++ 
+
+// }
+// }  Не розумію як його робити
