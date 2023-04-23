@@ -113,7 +113,7 @@ console.log(copyMultiplicationTable)
 
 {
     const word = prompt("Введіть слово");
-    let [,a=!,,b=!, c=! ] = word.split('');
+    let [[,a='!' ,, b='!' , c='!']] = word.split('');
     console.log([a,b,c])
 }
 
@@ -130,7 +130,7 @@ console.log(copyMultiplicationTable)
         [0, 8, 16, 24, 32, 40, 48, 56, 64, 72],
         [0, 9, 18, 27, 36, 45, 54, 63, 72, 81]
         ];
-    let [[a, b, ...rest1], [c, d, ...rest2], [e, f, ...rest3], [g, h, ...rest4]] = multiplicationTable;
+    let [[,, b, ...rest1], [,, d, ...rest2], [,, f, ...rest3], [,, h, ...rest4]] = multiplicationTable;
     multiplicationTable2 = [b, ...rest1, d, ...rest2, f, ...rest3, h, ...rest4];
     console.log(multiplicationTable2)
 
@@ -160,7 +160,7 @@ console.log(copyMultiplicationTable)
     const names = ["John", "Paul", "George", "Ringo"]
     let   str = "<table>"
     for (const name of names){
-        str += name + ` `
+        str += `<td>${name}</td>`
     }
     str+= "</table>"
     document.write(str) 
@@ -171,7 +171,7 @@ console.log(copyMultiplicationTable)
     const names = ["John", "Paul", "George", "Ringo"]
     let   str = "<table>"
     for (const name of names){
-        str += `<br>${name}</br>`
+        str += `<tr><td>${name}</td></tr>`
     }
     str+= "</table>"
     document.write(str)
@@ -182,10 +182,10 @@ console.log(copyMultiplicationTable)
     const currencies = ["USD", "EUR", "GBP", "UAH"]
     let   str = "<table>"
     for (let currency of currencies){ 
-        str += `<br></br>`
+        str += `<tr></tr>`
         console.log(currency)
         for (let letter of currency){ 
-            str += letter + " "
+            str += `<td>${letter}</td>`
             console.log(letter)
         }
     }
@@ -208,10 +208,10 @@ console.log(copyMultiplicationTable)
         ];
     let str = "<table>"
     for (let numbers of multiplicationTable){
-        str += `<br></br>`
+        str += `<tr></tr>`
         console.log(numbers)
         for (let one of numbers) {
-        str += one + ` `
+        str += `<td>${one}</td>`
         console.log(one)
         }
     }
@@ -230,8 +230,8 @@ console.log(copyMultiplicationTable)
 {
     let string = prompt("Введіть строку");
     let arr = string.split(" ");
-    const arr2 = arr.map(x=> x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase())
-    const arr3 = arr2.toString()
+    const capitalize = arr.map(x=> x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase())
+    const arr3 = capitalize.join(' ')
     console.log(arr3)
 } 
 
@@ -241,7 +241,7 @@ console.log(copyMultiplicationTable)
     let arr = answer.split(" ");
     let badWords = [`shit`, `fuck`, `bitch`]
     let arr2 = arr.filter(x => !badWords.includes(x))
-    let arr3 = arr2.toString()
+    let arr3 = arr2.join(" ")
     console.log(arr3)
 } 
 
@@ -249,7 +249,7 @@ console.log(copyMultiplicationTable)
     let words = prompt("Введіть рядок")
     let arr = words.split(" ")
     let badWords = [`shit`, `fuck`, `bitch`]
-    let arr2 = arr.map(x => !badWords.includes(x) ? x : x = 'beep')
+    let arr2 = arr.map(x => !badWords.includes(x) ? x : badWords = 'beep')
     let arr3 = arr2.join(' ').toString()
     console.log(arr3)
 }
@@ -263,16 +263,35 @@ console.log(copyMultiplicationTable)
     document.write(str)
 }
 
-// {
+
+{
 // const line = prompt()
-// const bracketsStack = []
-// let   i  = 0
-// for (const character of line){
+// lines = ( , [, {
+const line = prompt()
+const bracketsStack = []
+let i  = 0
+for (const character of line){
+    if(character === `'(', '[', '{'`)
+    bracketsStack.push(character)
+    if (!bracketsStack.includes(`)`,`]`, `}`)) {
+        alert("Ви помилились" + line.indexOf(")", "]", "}"))
+         break; 
+    }
+    else {
+        bracketsStack.pop()
+    }
+    i++ 
+}
+console.log(bracketsStack)
+}  
+// [ ( )] - stack " "
+//  ( )] - stack "["
+//   )] - stack "[("
+//   ] - stack "["
+//   - stack ""
 
-//     if (character !== bracketsStack) {
-//          break; 
-//     }
-//     i++ 
-
-// }
-// }  Не розумію як його робити
+// [ ( )} - stack " "
+//  ( )} - stack "["
+//   )} - stack "[("
+//   } - stack "["
+//   - stack ""
