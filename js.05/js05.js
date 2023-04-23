@@ -258,32 +258,32 @@ console.log(copyMultiplicationTable)
 {
     const currencies = ["USD", "EUR", "GBP", "UAH"]
     let str = "<select>"
-    str += currencies.reduce( (a,b) => (a + `<option>${a,b}</option>` + '' + b))
+    str += currencies.reduce( (a,b) => (a + `<option>${b}</option>`), "")
     str += "</select>"
     document.write(str)
 }
 
 
-{
+// {
+// // const line = prompt()
+// // lines = ( , [, {
 // const line = prompt()
-// lines = ( , [, {
-const line = prompt()
-const bracketsStack = []
-let i  = 0
-for (const character of line){
-    if(character === `'(', '[', '{'`)
-    bracketsStack.push(character)
-    if (!bracketsStack.includes(`)`,`]`, `}`)) {
-        alert("Ви помилились" + line.indexOf(")", "]", "}"))
-         break; 
-    }
-    else {
-        bracketsStack.pop()
-    }
-    i++ 
-}
-console.log(bracketsStack)
-}  
+// const bracketsStack = []
+// let i  = 0
+// for (const character of line){
+//     if(character === `'(', '[', '{'`)
+//     bracketsStack.push(character)
+//     if (!bracketsStack.includes(`)`,`]`, `}`)) {
+//         alert("Ви помилились" + line.indexOf(")", "]", "}"))
+//          break; 
+//     }
+//     else {
+//         bracketsStack.pop()
+//     }
+//     i++ 
+// }
+// console.log(bracketsStack)
+// }  
 // [ ( )] - stack " "
 //  ( )] - stack "["
 //   )] - stack "[("
