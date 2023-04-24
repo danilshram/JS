@@ -3,29 +3,37 @@
     name : "Дені",
     age : "4",
     weight : "40kg",
-    race : "Лабрадор"
+    race : "Лабрадор",
+    [prompt("Введіть ключ")] : prompt("Введіть значення"),
 }
-}
-
-{
-    const obj = {
+    const coffee = {
+        kind: 'arabica',
+        country: 'Kenia',
+        typeFor: 'filter',
+        weight: '250gr',
         [prompt("Введіть ключ")] : prompt("Введіть значення"),
-        [prompt("Введіть ключ")] : prompt("Введіть значення"),
+    }
+    const pants = {
+        color: 'black',
+        brand: 'Levis',
+        age: '1 year',
+        size: 'L',
         [prompt("Введіть ключ")] : prompt("Введіть значення")
     }
-    console.log(obj)
 }
 
 {
-    const obj = {
+    const dog = {
+        name : "Дені",
+        age : "4",
+        weight : "40kg",
+        race : "Лабрадор",
         [prompt("Введіть ключ")] : prompt("Введіть значення"),
-        [prompt("Введіть ключ")] : prompt("Введіть значення"),
-        [prompt("Введіть ключ")] : prompt("Введіть значення")
     }
     let name = prompt("Введіть ключ")
     let obj2 = {
         [name] : prompt("Введіть значення"),
-        ...obj 
+        ...dog 
     }
     console.log(obj2)
 }
@@ -42,7 +50,7 @@
                         children: [`Enter a data please`],
                     },
                     {
-                        tagName: 'br'
+                        tagName: 'br/'
                     },
                     {
                         tagName: 'input',
@@ -83,7 +91,8 @@
     }
     console.log(body.children[1].children[1].children)
     console.log(body.children[0].children[3].attrs['id'])
-    body.children[1].children[0].attrs[prompt("Введіть атрибут")] = prompt("Введіть значення") 
+    body.children[1].children[0].attrs[prompt("Введіть атрибут")] = prompt("Введіть значення")
+    let {children:[{children:[{children:spanText},{},{},{attrs:{id:nameId}}]},{children:[{},{children:buttonText}]}]} = body
     body.tagName = body
     body.children[0].body = body
     body.children[1].body = body
@@ -102,6 +111,46 @@
     const [odd1,,odd2,,odd3] = arr
     const [,,,,,...arr2] = arr
 }
-  
+
+{
+    let arr = [1, "abc"]
+    let letters = arr[1].split('')
+    arr = [1,...letters]
+    let [number, s1, s2, s3] = arr
+    console.log(number, s1, s2, s3)
+}
+{
+    let obj = {name: 'Ivan',
+           surname: 'Petrov',
+           children: [{name: 'Maria'}, {name: 'Nikolay'}]}
+    let [{name, surname, children:[name1, name2]}] = [obj]
+    console.log(name1,name2)
+}
+{
+    let arr = [1,2,3,4,5,6,7,10]
+    let {0:a,1:b,length}= arr
+    console.log(a,b,length)
+}
+
+{
+    const pants = {
+        color: 'black',
+        brand: 'Levis',
+        age: '1 year',
+        size: 'L',
+    }
+    const {[[prompt("Bведіть ключ")]]:f, ...rest} = pants
+    console.log(rest)
+}
+
+{
+    fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json())
+    .then(data => {
+        let firstCurrency = prompt("Введіть вхідну валюту").toUpperCase()                                        //ця функція запускається коли дані завантажуються.
+        let secondCurrency = prompt("Введіть валюту в яку конвертуємо").toUpperCase()                                        //Інший код працює РАНIШЕ.
+        let summary = +prompt("Введіть суму у вхідній валюті")                                       //тільки тут є змінна data з завантаженими даними
+        console.log(data)                                                                        // Вивчіть структуру, що отримується з сервера в консолі
+        })
+}
 
 
