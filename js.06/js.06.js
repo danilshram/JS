@@ -50,7 +50,7 @@
                         children: [`Enter a data please`],
                     },
                     {
-                        tagName: 'br/'
+                        tagName: 'br'
                     },
                     {
                         tagName: 'input',
@@ -144,13 +144,34 @@
 }
 
 {
-    fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json())
-    .then(data => {
-        let firstCurrency = prompt("Введіть вхідну валюту").toUpperCase()                                        //ця функція запускається коли дані завантажуються.
-        let secondCurrency = prompt("Введіть валюту в яку конвертуємо").toUpperCase()                                        //Інший код працює РАНIШЕ.
-        let summary = +prompt("Введіть суму у вхідній валюті")                                       //тільки тут є змінна data з завантаженими даними
-        console.log(data)                                                                        // Вивчіть структуру, що отримується з сервера в консолі
-        })
+    fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json()).then(data => {
+        const{rates:currencies} = data
+        let firstCurrency = prompt("Введіть вхідну валюту").toUpperCase().trim() + Object.keys(currencies)                              
+        let secondCurrency = prompt("Введіть валюту в яку конвертуємо").toUpperCase().trim() + Object.keys(currencies)                                    
+        let summary = +prompt("Введіть суму у вхідній валюті")
+        if(firstCurrency === secondCurrency) {
+            alert("Ви впевнені, шо ви не помилились?")
+        }
+        else {
+            const{[firstCurrency]:yourCurrency, [secondCurrency]: ourCurrency} = currencies
+            if(yourCurrency !== undefined && ourCurrency !== undefined && (isNaN(summary)) && summary > 0) {
+                let result =`${summary*(yourCurrency/ourCurrency)}`
+                alert(result)
+            }
+        }
+})                 
+// НЕ ЗНАЮ ЩО ЩЕ 
 }
-
-
+{
+    fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json()).then(data => {
+        const{rates:currencies} = data
+        const nameOfCurrency = Object.keys(currencies)
+        str = "<select>"
+            for(currency of nameOfCurrency) {
+                str += `<option>${currency}</option>`, ''
+                
+            }
+            str += `</select>`
+            document.write(str)
+})
+}
