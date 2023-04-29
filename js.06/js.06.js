@@ -175,3 +175,126 @@
             document.write(str)
 })
 }
+
+
+{
+    fetch('https://open.er-api.com/v6/latest/USD')
+    .then(res => res.json())
+    .then(data => {
+        const currencies = data.rates
+        const nameOfCurrency = Object.keys(currencies)
+        const currencyValue = Object.entries(currencies)
+        let str = `<style>table, td {border: 1px solid; text-align: center}</style>`
+        str += "<table><tr><th></th>"
+        for(let currency of nameOfCurrency){
+            str+= `<th>${currency}</th>`
+        }
+        str += `</tr>`
+        for(let currencyArray of currencyValue){
+            let [currency1, value1] = currencyArray
+            str+=`<tr><td>${currency1}</td>`
+            for(let[currency2, value2] of currencyValue){
+                str+= `<td>${(value1 / value2).toFixed(4)}</td>`
+            }
+        }
+        str+= `</table>`
+        document.write(str)
+        
+})
+}
+
+
+{
+    const car = {
+        "Name":"chevrolet chevelle malibu",
+        "Cylinders":8,
+        "Displacement":307,
+        "Horsepower":130,
+        "Weight_in_lbs":3504,
+        "Origin":"USA",
+        "in_production": false
+  }
+    let str = `<form>`
+    let keys = Object.keys(car)
+    for(let key of keys){
+        let value = car[key]
+        let inputType = null  
+        if(typeof value === "string") {
+            inputType = 'text'
+        }
+        if(typeof value === "number") {
+            inputType = 'number'
+        }
+        if(typeof value === "boolean") {
+            inputType = 'checkbox'
+        }
+        str+=`<label>${key}<input type=${inputType} value="${value}" /></label>`
+    }
+    
+    str+= `</form>`
+    document.write(str)
+}
+
+
+{/* <form>
+    <label>Name: <input type="text" value="chevrolet chevelle malibu"/></label>
+    <label>Cylinders: <input type="number" value="8"/></label>
+    <label>Displacement: <input type="number" value="307"/></label>
+    <label>Horsepower: <input type="number" value="130"/></label>
+    <label>Weight_in_lbs: <input type="number" value="3504"/></label>
+    <label>Origin: <input type="text" value="USA"/></label>
+    <label>in_production: <input type="checkbox" /></label>
+</form> */}
+
+
+{
+    const persons = [
+        {
+            name: 'Марія',
+            fatherName: 'Іванівна',
+            surname: 'Іванова',
+            sex: 'female'
+        },
+        {
+            name: 'Миколай',
+            fatherName: 'Іванович',
+            surname: 'Іванов',
+            age: 15
+        },
+        {
+            name: 'Петро',
+            fatherName: 'Іванович',
+            surname: 'Іванов',
+            married: true
+        },
+]
+let personKeys = []
+let str = `<style>table, td {border: 1px solid; text-align: center}</style>`
+str += '<table><tr>'
+for(let person of persons) {
+    // personKeys = [...Object.keys(person), ...personKeys]
+    const keys = Object.keys(person)
+    for(key of keys){
+       if(!personKeys.includes(key)){
+        personKeys = [...personKeys, key]
+        str+= `<td>${key}</td>`
+    }    
+    }    
+}
+str+=`</tr>`
+for(let person of persons) {
+    str+=`<tr>`
+    for(let key of personKeys){
+        personValue = person[key]
+        if(personValue === undefined){
+            str+= `<td></td>`
+        }else{
+        str+=`<td>${personValue}</td>`
+        }
+    }
+    str+=`</tr>`
+}
+
+str+=`</table>`
+document.write(str)
+}
