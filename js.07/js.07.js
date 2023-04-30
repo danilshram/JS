@@ -1,0 +1,100 @@
+let farenheit = celcius => (celcius*1.8) + 32
+farenheit()
+
+
+let color = (r, g, b) => {
+    r = prompt("Шо по червоному?")
+    g = prompt("Шо по зеленому?")
+    b = prompt("А синій?")
+    let rgb = "#"
+    if((!isNaN(r)) && (!isNaN(g)) && (!isNaN(b))){
+    rgb += r + g + b
+    }
+    if(rgb.length > 7) {
+        rgb = rgb.slice(0, 7)
+    }else {
+        rgb = rgb.padEnd(7, '0')
+    }
+    return rgb
+}
+
+
+let flatNumber = (yourFlatNumber, floors, flatFloorNumber) => {
+    floors = prompt ("Скільки поверхів у будинку?");
+    flatFloorNumber = prompt ("Скільки квартир на поверсі?");
+    yourFlatNumber = prompt ("Який номер квартири?");
+    let flatPerEntrance = (floors * flatFloorNumber);
+    let entrance = Math.ceil ((yourFlatNumber - 1) / flatPerEntrance) + 1;
+    let floor = Math.ceil((yourFlatNumber - 1) % flatPerEntrance / flatFloorNumber) + 1 ;
+    return {entrance, floor}
+} 
+// Або, я можу не давати можливості користувачу вводити промпт і вписую значення параметрів при виклику функціі //
+
+
+const capitalize = () => {
+    let name = prompt ("Введіть ім'я");
+    let surname = prompt ("Введіть прізвище");
+    let fatherName = prompt ("Введіть ім'я по-батьковій");
+    name = ((name.slice(0,1).toUpperCase()) + (name.slice(1).toLowerCase())).trim()
+    surname = ((surname.slice(0,1).toUpperCase()) + (surname.slice(1).toLowerCase())).trim()
+    fatherName = ((fatherName.slice(0,1).toUpperCase()) + (fatherName.slice(1).toLowerCase())).trim()
+    let fullName = name + " " + surname + " " + fatherName
+    return {name, surname, fatherName, fullName}
+}
+capitalize()
+
+
+let str = string => {
+    string = string.split('\\n')
+    string = string.join('\n')
+    return string
+}
+alert(str("ну\nякось\nтак"))
+
+
+let age = (yourAge) => (yourAge = prompt("Введіть свій вік")) ? yourAge : yourAge = 14
+age()
+
+
+
+let secrets = (rightLogin, rightPassword) => {
+    rightLogin = "admin"
+    rightPassword = "qwerty"
+    let login = prompt("Введіть логін")
+    let password = prompt("Введіть пароль")
+    if(login !== rightLogin && password !== rightPassword){
+        alert (`false`)
+    }else {
+        alert(`true`)
+    }
+    return {login, password}
+}
+secrets()
+
+
+let multiplicationTable = () => {
+    let arr = [[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14,15], [16,17,18,19,20]]
+    let str = `<style table, td {border: 1px solid black}></style>`
+    str = `<table><tr><th></th>`
+    for (let numbers of arr) {
+        str += `<tr></tr>`
+        for (let number of numbers) {
+            str += `<td>${number}</td>`
+        }
+    }
+    str+= `</tr>`
+    str +=`</table>`
+    return document.write(str)
+}
+multiplicationTable()
+
+
+let filterLexic = badWords => {
+    badWords = ['бляха', 'муха', "пляшка", "шабля"]
+    let string = prompt("Введіть рядок")
+    string = string.split(' ')
+    let string2 = string.filter(x => !badWords.includes(x))
+    string2 = string2.toString()
+    return string2
+}
+alert(filterLexic())
