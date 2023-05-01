@@ -169,7 +169,6 @@
         str = "<select>"
             for(currency of nameOfCurrency) {
                 str += `<option>${currency}</option>`, ''
-                
             }
             str += `</select>`
             document.write(str)

@@ -98,3 +98,40 @@ let filterLexic = badWords => {
     return string2
 }
 alert(filterLexic())
+{
+
+fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json())
+.then(data => {
+    const{rates: currencies} = data 
+    let mainArr = []
+    mainArr[0] = []
+    const nameOfCurrency = Object.keys(currencies)
+    const currencyValue = Object.entries(currencies)
+    for(let currency of nameOfCurrency){
+       mainArr[0].push(currency)
+    }
+    let index = 1
+    for([currency1, value1] of currencyValue){
+        mainArr[index] = []
+        mainArr[index].push(currency1)
+        for(let[currency2, value2] of currencyValue){
+            mainArr[index].push((value1/value2).toFixed(4))
+        }
+        index++
+    }
+    let multiplicationTable = (arr) =>{
+        let str = `<style table, td {border: 1px solid black}></style>`
+        str += "<table><tr><th></th>"
+        for (let numbers of arr) {
+            str += `<tr></tr>`
+            for (let number of numbers) {
+                str += `<td>${number}</td>`
+            }
+        }
+        str += `</tr>`
+        str +=`</table>`
+        return document.write(str)
+    }
+    return(multiplicationTable(mainArr))
+})
+} 
