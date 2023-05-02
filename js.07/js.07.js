@@ -135,3 +135,127 @@ fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json())
     return(multiplicationTable(mainArr))
 })
 } 
+
+
+let html = obj => {
+    let str = `<form>`
+    let keys = Object.keys(obj)
+    for(let key of keys){
+        let value = obj[key]
+        let inputType = null  
+        if(typeof value === "string") {
+            inputType = 'text'
+        }
+        if(typeof value === "number") {
+            inputType = 'number'
+        }
+        if(typeof value === "boolean") {
+            inputType = 'checkbox'
+        }
+        str+=`<label>${key}<input type=${inputType} value="${value}" /></label>`
+    }
+    str+= `</form>`
+    obj = {
+        "Name":"chevrolet chevelle malibu",
+        "Cylinders":8,
+        "Displacement":307,
+        "Horsepower":130,
+        "Weight_in_lbs":3504,
+        "Origin":"USA",
+        "in_production": false
+  }
+    return document.write(str)
+
+}
+html(obj)
+
+{
+    var persons = [
+        {name: "Іван", age: 17},
+        {name: "Марія", age: 35},
+        {name: "Олексій", age: 73},
+        {name: "Яків", age: 12},
+    ]
+    let sort = (arr, key, sorting) => {
+    const sortArray = arr.sort((a, b) => {
+        if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+          return a[key] - b[key];
+        } else if (typeof a[key] === 'string' && typeof b[key] === 'string') {
+          return a[key].localeCompare(b[key]);
+        } else {
+          return 0;
+        }
+      })
+    if(sorting){
+       return sortArray
+    } 
+       return sortArray.reverse()
+    }
+    sort(persons, "age", false); 
+    sort(persons, "name", false);
+}
+{
+    let persons = [
+        {
+            name: 'Марія',
+            fatherName: 'Іванівна',
+            surname: 'Іванова',
+            sex: 'female'
+        },
+        {
+            name: 'Миколай',
+            fatherName: 'Іванович',
+            surname: 'Іванов',
+            age: 15
+        },
+        {
+            name: 'Петро',
+            fatherName: 'Іванович',
+            surname: 'Іванов',
+            married: true
+        },
+]
+const tableView = (arr, key, sorting) => {
+    const sortArray = arr.sort((a, b) => {
+        if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+          return a[key] - b[key];
+        } else if (typeof a[key] === 'string' && typeof b[key] === 'string') {
+          return a[key].localeCompare(b[key]);
+        } else {
+          return 0;
+        }
+      })
+    if(!sorting){
+        sortArray.reverse()
+    } 
+    console.log(sortArray)
+    let itemKeys = []
+    let str = `<style>table, td {border: 1px solid; text-align: center}</style>`
+    str += '<table><tr>'
+    for(let item of sortArray) {
+        const keys = Object.keys(item)
+        for(key of keys){
+        if(!itemKeys.includes(key)){
+            itemKeys = [...itemKeys, key]
+            str+= `<td>${key}</td>`
+        }    
+        }    
+    }
+    str+=`</tr>`
+    for(let item of sortArray) {
+        str+=`<tr>`
+        for(let key of itemKeys){
+            itemValue = item[key]
+            if(itemValue === undefined){
+                str+= `<td></td>`
+            }else{
+            str+=`<td>${itemValue}</td>`
+            }
+        }
+        str+=`</tr>`
+    }
+    str+=`</table>`
+    document.write(str)
+    }
+tableView(persons, "age", true)
+}
