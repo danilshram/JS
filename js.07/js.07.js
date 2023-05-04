@@ -260,3 +260,12 @@ const tableView = (arr, key, sorting) => {
     }
 tableView(persons, "age", true)
 }
+
+let calc = (a) => {
+    let c = null
+    let b = (a * 5);
+    b = (c = b/2)
+    return {b, c}
+}
+console.log(calc(1))
+

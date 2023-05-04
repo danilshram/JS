@@ -1,0 +1,37 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <input type='number' id="firstNumber" />
+        <input type='number' id="secondNumber" />
+        <div id="divisionResult">
+            Введіть два числа
+        </div>
+        <script>
+            const calcResult = () => {
+                let firstInputValue = document.getElementById('firstNumber').value
+                let secondInputValue = document.getElementById("secondNumber").value
+                let divResult = document.getElementById("divisionResult")
+                let result = divisionCalc(firstInputValue, secondInputValue)
+                if(firstInputValue === "" || secondInputValue === ""){
+                    divResult.innerText = "Введіть два числа"
+                }else if(secondInputValue === "0"){
+                    divResult.innerText = "На нуль ділити не можна"
+                }else{
+                divResult.innerText = `Результат ділення ${firstInputValue} на ${secondInputValue} дорівнює: ${result}`
+                }
+            }
+             let divisionCalc = (a,b) => {
+                return Math.round(a/b)
+            }
+            let firstNumberInput = document.querySelector("#firstNumber")
+            let secondNumberInput = document.querySelector("#secondNumber")
+            firstNumberInput.oninput = secondNumberInput.oninput = calcResult
+        </script>
+    </body>
+    </html>
