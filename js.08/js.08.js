@@ -101,13 +101,58 @@ noSwitch(drink, {
             buttonHtml.innerText = currency
             buttonHtml.onclick = () =>{
                 const currentCurrencyToUSD = currencies[currency]
-               const yourSummary = +prompt("Введіть суму яку хочете поміняти") 
-               let result = yourSummary / currentCurrencyToUSD
+                const yourSummary = +prompt("Введіть суму яку хочете поміняти") 
+                let result = yourSummary / currentCurrencyToUSD
                 alert(result)
             }
             document.body.append(buttonHtml)
         }
         })
+}
+
+{
+    // <select id='from'> - вихідна валюта
+    // <select id='to'> - валюта в яку відбувається обмін
+    // <div id='rate'> - кроскурс між валютами
+    // <input type='number' id='amount' /> - сума у вихідній валюті
+    // <div id='result'> - сума у валюті, в яку хочемо поміняти
+//     Використовуючи заготівлю з попереднього завдання, наповніть select-и тегами option з назвами валют, використовуючи цикл
+//     document.createElement
+//     innerText для option
+//     from.append або to.append
+//     За межами циклу призначте обробники onchange для елементів select та oninput для елемента input, використовуючи їх id. За цими подіями оновлюйте текст у div#rate та div#result
+    fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json())
+    .then(data => {
+       let firstCurrency = document.createElement('select')
+       firstCurrency.id = 'from'
+       let secondCurrency = document.createElement('select')
+       secondCurrency.id = 'to'
+       let course = document.createElement('div')
+       course.id = 'rate'
+       let yourMoney = document.createElement('input')
+       yourMoney.type = 'number'
+       yourMoney.id = 'amount'
+       let result = document.createElement('div')
+       result.id = 'result'
+
+       let currencies = data.rates
+       for(currency in currencies){
+        let option = document.createElement('option')
+        option.innerText = currency
+        // option.value = currency 
+        // firstCurrency.appendChild(option)
+        // secondCurrency.appendChild(option)
+        firstCurrency.add(new Option(currency, currency))
+        secondCurrency.add(new Option(currency, currency))
+       }
+       console.log(firstCurrency)
+
+       firstCurrency.onchange = () => course.innerHtml = firstCurrency.value / secondCurrency.value
+       secondCurrency.onchange = () => course.innerHtml = firstCurrency.value / secondCurrency.value
+       yourMoney.onchange = () => result.innerHTML = yourMoney.value * (firstCurrency.value / secondCurrency.value)
+       document.body.append(firstCurrency)
+       document.body.append(secondCurrency)
+    })
 }
 
 
