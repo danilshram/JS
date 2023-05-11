@@ -104,3 +104,47 @@ console.log(str)
     }
     console.log(arr)
 }
+
+{
+    let readArrayOfObjects = () => {
+        let arr = []
+        for(let i = 0;; i++){
+            let question = confirm("Ще хочеш?")
+            if(!question){
+                break
+            }
+            let keyName = prompt("Введіть ключ")
+            let keyValue = prompt("Введіть значення для ключа")
+            if(![keyName] || !keyValue){
+                return arr
+            }
+            arr[i]= {[keyName]: keyValue} 
+        }
+    return arr
+    }
+    readArrayOfObjects()
+}
+
+
+
+{
+        let size = 10
+        let table = document.createElement('table')
+        table.style.border = '2px black solid'
+        let arr = []
+        for(let i = 0;i<size;i++){
+            let tr = document.createElement('tr')
+            tr.style.border = '1px solid black'
+            arr[i] = []
+            table.append(tr)
+            for(let x = 1; x<size; x++){
+                let td = document.createElement('td')
+                td.style.border = '1px solid black'
+                arr[i][x] = i * x
+                td.innerText = arr[i][x]
+                tr.append(td)
+            }
+        }
+       document.body.append(table)
+}
+ 

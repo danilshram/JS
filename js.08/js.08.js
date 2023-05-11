@@ -127,9 +127,10 @@ noSwitch(drink, {
        for([currency, value] in currencies){
         let option = document.createElement('option')
         option.innerText = currency
-        option.value = value
+        let option2 = document.createElement('option')
+        option2.innerText = currency
         firstCurrency.append(option)
-        secondCurrency.append(option)
+        secondCurrency.append(option2)
        }
 
        let calc = () => {
@@ -139,7 +140,7 @@ noSwitch(drink, {
         result.innerText = money
        }
 
-       firstCurrency.onchange = secondCurrency.onchange = yourMoney.onchange = calc() 
+       firstCurrency.onchange = secondCurrency.onchange = yourMoney.onchange = result.onchange = rate.onchange = calc() 
 
        document.body.append(firstCurrency)
        document.body.append(secondCurrency)
