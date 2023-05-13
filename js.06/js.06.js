@@ -107,16 +107,13 @@
 
 {
     let arr = [1,2,3,4,5, "a", "b", "c"]
-    const [,even1,,even2,,] = arr
-    const [odd1,,odd2,,odd3] = arr
-    const [,,,,,...arr2] = arr
+    const [odd1,even1, odd2,even2, odd3,...arr2] = arr
+    console.log(odd1,even1, odd2,even2, odd3, arr2)
 }
 
 {
     let arr = [1, "abc"]
-    let letters = arr[1].split('')
-    arr = [1,...letters]
-    let [number, s1, s2, s3] = arr
+    const [number, [s1,s2,s3]] = arr
     console.log(number, s1, s2, s3)
 }
 {

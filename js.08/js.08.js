@@ -124,7 +124,7 @@ noSwitch(drink, {
 
 
        let currencies = data.rates
-       for([currency, value] in currencies){
+       for(currency in currencies){
         let option = document.createElement('option')
         option.innerText = currency
         let option2 = document.createElement('option')
@@ -136,8 +136,8 @@ noSwitch(drink, {
        let calc = () => {
         let course = firstCurrency.value / secondCurrency.value
         let money = yourMoney.value * course
-        rate.innerText = course
-        result.innerText = money
+        rate.innerHTML = course
+        result.innerHTML = money
        }
 
        firstCurrency.onchange = secondCurrency.onchange = yourMoney.onchange = result.onchange = rate.onchange = calc() 

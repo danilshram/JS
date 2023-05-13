@@ -3,20 +3,10 @@ farenheit()
 
 
 let color = (r, g, b) => {
-    r = prompt("Шо по червоному?")
-    g = prompt("Шо по зеленому?")
-    b = prompt("А синій?")
-    let rgb = "#"
-    if((!isNaN(r)) && (!isNaN(g)) && (!isNaN(b))){
-    rgb += r + g + b
-    }
-    if(rgb.length > 7) {
-        rgb = rgb.slice(0, 7)
-    }else {
-        rgb = rgb.padEnd(7, '0')
-    }
+    let rgb = "#" + (r < 16 ? "0" + r.toString(16) : r.toString(16)) + (g < 16 ? "0" + g.toString(16) : g.toString(16)) + (b < 16 ? "0" + b.toString(16) : b.toString(16));
     return rgb
 }
+color(14,231,0)
 
 
 let flatNumber = (yourFlatNumber, floors, flatFloorNumber) => {
@@ -32,14 +22,12 @@ let flatNumber = (yourFlatNumber, floors, flatFloorNumber) => {
 
 
 const capitalize = () => {
+    let result =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
     let name = prompt ("Введіть ім'я");
     let surname = prompt ("Введіть прізвище");
     let fatherName = prompt ("Введіть ім'я по-батьковій");
-    name = ((name.slice(0,1).toUpperCase()) + (name.slice(1).toLowerCase())).trim()
-    surname = ((surname.slice(0,1).toUpperCase()) + (surname.slice(1).toLowerCase())).trim()
-    fatherName = ((fatherName.slice(0,1).toUpperCase()) + (fatherName.slice(1).toLowerCase())).trim()
     let fullName = name + " " + surname + " " + fatherName
-    return {name, surname, fatherName, fullName}
+    return {name:result(name), surname:result(surname), fatherName:result(fatherName), fullName:result(fullName)}
 }
 capitalize()
 
@@ -52,14 +40,12 @@ let str = string => {
 alert(str("ну\nякось\nтак"))
 
 
-let age = (yourAge) => (yourAge = prompt("Введіть свій вік")) ? yourAge : yourAge = 14
+let age = (yourAge, age = 18) => (yourAge = prompt("Введіть свій вік")) ? yourAge : age
 age()
 
 
 
 let secrets = (rightLogin, rightPassword) => {
-    rightLogin = "admin"
-    rightPassword = "qwerty"
     let login = prompt("Введіть логін")
     let password = prompt("Введіть пароль")
     if(login !== rightLogin && password !== rightPassword){
@@ -69,29 +55,25 @@ let secrets = (rightLogin, rightPassword) => {
     }
     return {login, password}
 }
-secrets()
+secrets('admin','qwerty')
 
 
-let multiplicationTable = () => {
-    let arr = [[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14,15], [16,17,18,19,20]]
-    let str = `<style table, td {border: 1px solid black}></style>`
-    str = `<table><tr><th></th>`
+let multiplicationTable = (arr) => {
+    let str = `<table>`
     for (let numbers of arr) {
-        str += `<tr></tr>`
+        str+= `<tr>`
         for (let number of numbers) {
             str += `<td>${number}</td>`
         }
+        str+=`</tr>`
     }
-    str+= `</tr>`
     str +=`</table>`
     return document.write(str)
 }
-multiplicationTable()
+multiplicationTable([[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14,15], [16,17,18,19,20]])
 
 
-let filterLexic = badWords => {
-    badWords = ['бляха', 'муха', "пляшка", "шабля"]
-    let string = prompt("Введіть рядок")
+let filterLexic = (string,badWords) => {
     string = string.split(' ')
     let string2 = string.filter(x => !badWords.includes(x))
     string2 = string2.toString()
