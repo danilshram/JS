@@ -153,7 +153,7 @@
             const{[firstCurrency]:yourCurrency, [secondCurrency]: ourCurrency} = currencies
             if(yourCurrency !== undefined && ourCurrency !== undefined && (isNaN(summary)) && summary > 0) {
                 let result =`${summary*(yourCurrency/ourCurrency)}`
-                alert(result)
+                console.log(result)
             }
         }
 })                 
@@ -224,9 +224,9 @@
         if(typeof value === "boolean") {
             inputType = 'checkbox'
         }
-        str+=`<label>${key}<input type=${inputType} value="${value}" /></label>`
+        let checkedCheckbox = value ? 'checked' : undefined
+        str+=`<label>${key}<input type=${inputType} value="${value}"${checkedCheckbox} /></label>`
     }
-    
     str+= `</form>`
     document.write(str)
 }

@@ -147,7 +147,6 @@ let html = obj => {
         "in_production": false
   }
     return document.write(str)
-
 }
 html(obj)
 

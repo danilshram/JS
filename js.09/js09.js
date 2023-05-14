@@ -124,9 +124,23 @@ console.log(str)
     }
     readArrayOfObjects()
 }
-
-
-
+{
+    let size = 11;
+    let str = "";
+    for(let i = 1; i<=size; i++){
+        let startStr = ".".repeat(size - i)
+        let romb = "#".repeat(2*i - 1)
+        let endStr = ".".repeat(size - i)
+        str+= startStr + romb + endStr + '\n'
+    }
+    for(let x = size - 1; x>0; x--){
+        let startStr = ".".repeat(size - x)
+        let romb = "#".repeat(2*x - 1)
+        let endStr = ".".repeat(size - x)
+        str+= startStr + romb + endStr + '\n'
+    }
+    console.log(str)
+}
 {
         let size = 10
         let table = document.createElement('table')
@@ -135,16 +149,18 @@ console.log(str)
         for(let i = 0;i<size;i++){
             let tr = document.createElement('tr')
             tr.style.border = '1px solid black'
+            tr.onmouseover = () => tr.style.backgroundColor = 'blue'
+            tr.onmouseout = () => tr.style.backgroundColor = 'transparent'
             arr[i] = []
-            table.append(tr)
-            for(let x = 1; x<size; x++){
+            for(let x = 0; x<size; x++){
                 let td = document.createElement('td')
-                td.style.border = '1px solid black'
                 arr[i][x] = i * x
-                td.innerText = arr[i][x]
-                tr.append(td)
-            }
+                td.innerText = arr[i][x] 
+                tr.appendChild(td)
+                td.onmouseover = () => td.style.backgroundColor = 'green'
+                td.onmouseout = () => td.style.backgroundColor = 'transparent'
+            }  
+            table.append(tr)
         }
        document.body.append(table)
 }
- 
