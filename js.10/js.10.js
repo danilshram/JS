@@ -206,13 +206,31 @@ farenheit(50)
 }
 {
     function isSorted (...params){
-        for(numbers of params){
-            let i = 0
-            i++
-            if(typeof numbers === "number" && params[i] < params [i + 1] ){
-                return true
+            for(let i = 1; i<params.length;i++){
+            if(typeof params[i] !== "number" || params[i] <= params[i-1]){
+                return false
             }
+        }
+        return true
+    }
+}
+{
+    let arr = []
+    let arr2 = []
+    let numbers 
+    while(numbers = +prompt("Введіть шось")) {
+        arr2 = arr.push(numbers)
+    }
+    function isSorted (...params){
+        for(let i = 1; i<params.length;i++){
+        if(typeof params[i] !== "number" || params[i] <= params[i-1]){
             return false
         }
     }
+    return true
 }
+    let sortArr = arr.sort((a, b) => a - b)
+    isSorted(sortArr)
+    console.log(sortArr)
+}      
+// Доповнив задання функцією яка сортує отриманий масив
