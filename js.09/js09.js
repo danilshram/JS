@@ -147,20 +147,29 @@ console.log(str)
         table.style.border = '2px black solid'
         let arr = []
         for(let i = 0;i<size;i++){
-            let tr = document.createElement('tr')
-            tr.style.border = '1px solid black'
-            tr.onmouseover = () => tr.style.backgroundColor = 'blue'
-            tr.onmouseout = () => tr.style.backgroundColor = 'transparent'
+            let row = document.createElement('tr')
+            row.style.border = '1px solid black'
             arr[i] = []
             for(let x = 0; x<size; x++){
-                let td = document.createElement('td')
+                let cell  = document.createElement('td')
                 arr[i][x] = i * x
-                td.innerText = arr[i][x] 
-                tr.appendChild(td)
-                td.onmouseover = () => td.style.backgroundColor = 'green'
-                td.onmouseout = () => td.style.backgroundColor = 'transparent'
+                cell.innerText = arr[i][x] 
+                row.appendChild(cell)
+                cell.addEventListener('mouseover', function () {
+                    cell.style.backgroundColor = 'green';
+                    row.style.backgroundColor = 'blue';
+                    let column = table.rows[x].cells[cell.cellIndex]
+                    column.style.backgroundColor = 'red';
+                  });
+          
+                  cell.addEventListener('mouseout', function () {
+                    cell.style.backgroundColor = 'transparent';
+                    row.style.backgroundColor = 'transparent';
+                    let column =  table.rows[x].cells[cell.cellIndex]
+                    column.style.backgroundColor = 'transparent';
+                  });
             }  
-            table.append(tr)
+            table.append(row)
         }
        document.body.append(table)
 }

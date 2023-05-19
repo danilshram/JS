@@ -130,7 +130,7 @@ farenheit(50)
           }
     }
 }
-{
+
     function createPersonClosureDestruct(person){
         let{name, surname, fatherName, age} = person
         function getName (){
@@ -203,7 +203,7 @@ farenheit(50)
             setFullName,
           }
     }
-}
+
 {
     function isSorted (...params){
             for(let i = 1; i<params.length;i++){
@@ -234,3 +234,124 @@ farenheit(50)
     console.log(sortArr)
 }      
 // Доповнив задання функцією яка сортує отриманий масив
+
+function createPersonClosureDestruct(person){
+    let{name, surname, fatherName, age} = person
+    function getName (){
+        return name
+    }
+    function getSurname (){
+        return surname
+    }
+    function getAge (){
+        return age
+    }
+    function getFatherName(){
+        return fatherName
+    }
+    function getFullName (){
+        return `${surname} ${name} ${fatherName}`
+    }
+    function setName (newName){
+        let result =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
+        if(result(newName) === newName){
+            name = newName
+            return name
+        }else{
+            return name
+        }
+    }
+    function setSurname (newSurname){
+        let result =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
+        if(result(newSurname) === newSurname){
+            surname = newSurname
+            return surname
+        }else{
+            return surname
+        }
+    }
+    function setFatherName (newFatherName){
+        let result =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
+        if(result(newFatherName) === newFatherName){
+            fatherName = newFatherName 
+            return fatherName
+        }else{
+            return fatherName
+        }
+    }
+    function setAge (newAge){
+        if(newAge >= 0 && newAge<= 100){
+            age = newAge
+            return age
+        }else{
+            return undefined
+        }
+    }
+    function setFullName (newFullName){
+        let partsOfFullName = newFullName.split(" ")
+        surname = partsOfFullName[0]
+        name = partsOfFullName[1]
+        fatherName = partsOfFullName[2]
+        return `${surname} ${name} ${fatherName}`
+    }
+    return {
+        getName,
+        getSurname,
+        getFatherName,
+        getAge,
+        getFullName,
+        setName,
+        setSurname,
+        setFatherName,
+        setAge,
+        setFullName,
+      }
+}
+    const b = createPersonClosureDestruct("Ганна", "Іванова")
+    b.setAge(15)
+    b.setFullName("Петрова Ганна Миколаївна")
+
+    function personForm(parent, person){
+        let nameInput = document.createElement('input')
+        let surnameInput = document.createElement('input')
+        let fatherNameInput = document.createElement('input')
+        let fullNameInput = document.createElement('input')
+        let ageInput = document.createElement('input')
+        nameInput.value = person.getName()
+        surnameInput.value = person.getSurname()
+        fatherNameInput.value = person.getFatherName()
+        fullNameInput.value = person.getFullName()
+        ageInput.value = person.getAge()
+        parent.appendChild(nameInput)
+        parent.appendChild(surnameInput)
+        parent.appendChild(fatherNameInput)
+        parent.appendChild(ageInput)
+        parent.appendChild(fullNameInput)
+
+
+        nameInput.oninput = () => {
+            nameInput.value = person.setName(nameInput.value)
+            fullNameInput.value = person.getFullName()
+        }
+        surnameInput.oninput = () => {
+            surnameInput.value = person.setSurname(surnameInput.value)
+            fullNameInput.value = person.getFullName()
+        }
+        fatherNameInput.oninput = () => {
+            fatherNameInput.value = person.setFatherName(fatherNameInput.value)
+            fullNameInput.value = person.getFullName()
+        }
+        fullNameInput.oninput = () =>{
+            fullNameInput.value = person.setFullName(fullNameInput.value)
+            nameInput.value = person.getName()
+            surnameInput.value = person.getSurname()
+            fatherNameInput.value = person.getFatherName()
+        }
+        ageInput.type = 'number'
+        ageInput.oninput = () => {
+            ageInput.value = person.setAge(ageInput.value)
+        }
+}
+
+personForm(document.body, b);
+
