@@ -49,13 +49,11 @@ do{
 }
 {
     let n =+prompt("До якого числа рахуємо?")
-    let string = []
-    let a = []
+    let str = ''
     for(let i = 0; i<=n; i++){
-        a[i] = string.push("#")
+        str += "#"+" "
     }
-    string = string.join("")
-    console.log(string)
+    console.log(str)
 }
 {
     let str = ''
@@ -72,15 +70,13 @@ do{
     let x = +prompt("Скільки елементів в рядку?")
     let str = ''
     for(let j = 0;j<i;j++){
-        if(j%2 === 0){
         for(let n = 0; n<x;n++){
-            str+='.' + '#'
-           }
-        }else{
-        for(let n = 0; n<x;n++){
-            str+='#' + '.'
-    }
-    }
+            if((n+j)%2 !== 0){
+               str+='#' 
+            }else {
+                str+='.'
+            }
+           } 
     str+= '\n'
 }
 console.log(str)
@@ -108,17 +104,27 @@ console.log(str)
 {
     let readArrayOfObjects = () => {
         let arr = []
+        let object = {}
         for(let i = 0;; i++){
             let question = confirm("Ще хочеш?")
             if(!question){
                 break
             }
-            let keyName = prompt("Введіть ключ")
-            let keyValue = prompt("Введіть значення для ключа")
-            if(![keyName] || !keyValue){
-                return arr
+            let continueLoop = true
+            while(continueLoop){
+                let keyName = prompt("Введіть ключ")
+                let keyValue = prompt("Введіть значення для ключа")
+                if(keyName === null){
+                    continueLoop = false
+                    break
+                }
+                if(keyValue === null){
+                    continueLoop = false
+                    break
+                }
+                object[keyName] = keyValue
             }
-            arr[i]= {[keyName]: keyValue} 
+            arr[i] = object 
         }
     return arr
     }
