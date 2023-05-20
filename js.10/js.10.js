@@ -355,3 +355,21 @@ function createPersonClosureDestruct(person){
 
 personForm(document.body, b);
 
+    function getSetForm(parent, getSet){
+        const inputs = {} 
+        let result =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
+        const updateInputs = () => { 
+            for
+        }
+        
+        for (const getSetName in getSet){
+            const getOrSet = //перші три літери змінної getSetName. Також можна використовувати прапор isGet, який дорівнюватиме true або false
+            const fieldName = // Інші літери getSetName - типу "Name" або "FullName"
+            const setKey    = `set` + fieldName
+            const getKey    = `get` + fieldName
+            
+            //допишіть тут все, що треба, і не тільки тут
+        }
+        updateInputs()
+    }
+}
