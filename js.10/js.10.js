@@ -357,19 +357,81 @@ personForm(document.body, b);
 
     function getSetForm(parent, getSet){
         const inputs = {} 
-        let result =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
         const updateInputs = () => { 
-            for
+            for(let fieldName in inputs){
+                let input = inputs[fieldName]
+                const getKey    = `get` + fieldName
+                let value = getSet[getKey]()
+                if(value){
+                input.value = value
+                }
+            }
         }
         
         for (const getSetName in getSet){
-            const getOrSet = //перші три літери змінної getSetName. Також можна використовувати прапор isGet, який дорівнюватиме true або false
-            const fieldName = // Інші літери getSetName - типу "Name" або "FullName"
-            const setKey    = `set` + fieldName
+            const getOrSet = getSetName.startsWith('get')
+            const fieldName = getSetName.slice(3)
             const getKey    = `get` + fieldName
-            
-            //допишіть тут все, що треба, і не тільки тут
+            const setKey    = `set` + fieldName
+            let getValue = getSet[getKey]()
+            const input = document.createElement('input')
+            input.placeholder = fieldName
+            input.type = (typeof getValue === 'number') ? 'number' : 'text'
+            if(getValue && getOrSet && setKey && getKey){
+                input.value = getValue
+            }
+            input.oninput = function(){
+                const setKey    = `set` + fieldName
+                let setValue = getSet[setKey]
+                if(setValue){
+                    setValue(input.value)
+                    updateInputs()
+                }
+                } 
+            inputs[fieldName] = input
+            parent.appendChild(input)
         }
         updateInputs()
+    }    
+
+    let car;
+{
+    let brand = 'BMW', model = 'X5', volume = 2.4
+    car = {
+        getBrand(){
+            return brand
+        },
+        setBrand(newBrand){
+            if (newBrand && typeof newBrand === 'string'){
+                brand = newBrand
+            }
+            return brand
+        },
+        
+        getModel(){
+            return model
+        },
+        setModel(newModel){
+            if (newModel && typeof newModel === 'string'){
+                model = newModel
+            }
+            return model
+        },
+        
+        getVolume(){
+            return volume
+        },
+        setVolume(newVolume){
+            newVolume = +newVolume
+            if (newVolume && newVolume > 0 && newVolume < 20){
+                volume = newVolume
+            }
+            return volume
+        },
+        
+        getTax(){
+            return volume * 100
+        }
     }
 }
+getSetForm(document.body, car)
