@@ -32,7 +32,21 @@ let myBind = function (someF, context, params){
         return foo(...resultArray)
     }
 }
-let cube = myBind(Math.pow, Math, [, 3])
-let pow5 = myBind(Math.pow, Math, [, 5])
-pow5(2)
-cube(3)
+
+function checkResult(original, validator){
+    function wrapper(...params){
+        let result = original(params)
+        let validatorResult = validator(result)
+        if(validatorResult){
+            return result
+        }else{
+            let foo = wrapper.call(original)
+            return foo        
+        }
+    }
+    return wrapper
+}
+let RandomHigh = checkResult(Math.random, number => number > 0.5)
+let number = RandomHigh()
+let AlwaysSayYes = checkResult(confirm, x => x)
+let question = AlwaysSayYes(confirm("Шо?"))
