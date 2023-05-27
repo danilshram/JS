@@ -50,3 +50,13 @@ let RandomHigh = checkResult(Math.random, number => number > 0.5)
 let number = RandomHigh()
 let AlwaysSayYes = checkResult(confirm, x => x)
 let question = AlwaysSayYes(confirm("Шо?"))
+const credentials = () => {
+    let capitalize =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
+    let name = prompt ("Введіть ім'я") || "";
+    let surname = prompt ("Введіть прізвище") || "";
+    let fatherName = prompt ("Введіть ім'я по-батьковій") || "";
+    let fullName = name + " " + surname + " " + fatherName
+    return {name:capitalize(name), surname:capitalize(surname), fatherName:capitalize(fatherName), fullName:capitalize(fullName)}
+}
+let respectMe = checkResult(credentials, x => x.name !== "" &&  x.surname !== "" && x.fatherName !== "")
+let checkFullName = respectMe()
