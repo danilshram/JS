@@ -46,29 +46,37 @@ function Password(parent, open){
         }
         checkbox.innerText = this.status ? 'Hide' : 'Show'
     }
-    this.onChange = function(){
-        return passwordInput.value
+    if(typeof this.onChange === 'function'){
+        this.onChange(passwordInput.value)
     }
-    this.onChange2 = function(){
-        return loginInput.value
+    if(typeof this.onChange2 === 'function'){
+        this.onChange2(loginInput.value)
     }
-    this.onOpenChange = function(status){
-        return status
+    if(typeof this.onOpenChange === 'function'){
+        this.onOpenChange(this.status)
     }
-    passwordInput.oninput = () => this.onChange(passwordInput.value)
-    loginInput.oninput = () => this.onChange2(loginInput.value)
+    passwordInput.oninput = this.onChange(passwordInput.value) = () => {
+        if(loginInput.value === "" && passwordInput.value === ""){
+            checkbox.disabled = true
+        }else{
+            checkbox.disabled = false
+        }  
+        
+    }
+    loginInput.oninput =  this.onChange2(loginInput.value)= () => {
+        if(loginInput.value === "" && passwordInput.value === ""){
+            checkbox.disabled = true
+        }else{
+            checkbox.disabled = false
+        } 
+    }
     checkbox.onclick = () =>{
         this.setOpen(!this.status)
         this.onOpenChange(this.status)
     }
     this.setOpen(open)
-}
 
-// if(loginInput.value === "" && passwordInput.value === ""){
-//     checkbox.disabled = true
-// }else{
-//     checkbox.disabled = false
-// } Я не знаю куди мені вставити цю перевірку для кнопки   
+}
 
 let p = new Password(document.body, true)
 
