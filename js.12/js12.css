@@ -1,0 +1,25 @@
+body {
+    height: 100vh;
+}
+#main-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    font-size: 18px;
+}
+#beer {
+    display: flex;
+    background-color: sandybrown;
+    flex-flow: column, wrap;
+}
+#chips {
+    display: flex;
+    background-color:burlywood;
+    flex-flow: column, wrap;
+}
+#cigars {
+    display: flex;
+    background-color: whitesmoke;
+    flex-flow: column, wrap;
+}
