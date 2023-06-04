@@ -120,7 +120,112 @@ domTree(document.body, table)
 
 
 {
-    function deepCopy( )
+    function deepCopy(someArr){
+        if (typeof someArr === "object") {
+            return someArr
+        }
+        let copyArr = []
+        for(let key in someArr){
+            let value = someArr[key]
+            copyArr[key] = deepCopy(value)
+        }
+        return copyArr
+    }
     const arr  = [1,"string", null, undefined, {a: 15, b: 10, c: [1,2,3,4],d: undefined, e: true }, true, false]
+    const arr2 = deepCopy(arr)
+    console.log(arr2)
+}
 
+
+{
+    function stringify(something){
+        if(typeof something === 'undefined' || something === null){
+            something = 'null'
+            return something
+        }
+        if (typeof something === 'string') {
+            return '"' + something + '"';
+          }
+          
+          if (typeof something === 'number' || typeof something === 'boolean') {
+            return something.toString();
+          }
+          
+          if (Array.isArray(something)) {
+            const elements = something.map(i => stringify(i));
+            return '[' + elements.join(',') + ']';
+          }
+          
+          if (typeof something === 'object') {
+            const keys = Object.keys(something).map((key) => {
+              const value = stringify(something[key])
+              if(typeof value !== 'undefined'){
+              return '"' + key + '":' + value
+            }else{
+                return undefined
+            }
+            }).filter(i => typeof i !== 'undefined');
+            return '{' + keys.join(',') + '}'
+          }
+         return ''
+        }
+    const arr  = [1,"string", null, undefined, {a: 15, b: 10, c: [1,2,3,4],d: undefined, e: true }, true, false]
+    
+const table = {
+    tagName: 'table',
+    attrs: {
+        border: "1px",
+    },
+    children: [
+        {
+            tagName: 'tr',
+            children: [
+                {
+                    tagName: "td",
+                    children: ["1x1"],
+                },
+                {
+                    tagName: "td",
+                    children: ["1x2"],
+                },
+            ]
+        },
+        {
+            tagName: 'tr',
+            children: [
+                {
+                    tagName: "td",
+                    children: ["2x1"],
+                },
+                {
+                    tagName: "td",
+                    children: ["2x2"],
+                },
+            ]
+        }
+    ]
+}
+    const jsonString = stringify(arr)
+    const jsonTable = stringify(table)
+    console.log(jsonTable)
+    console.log(JSON.parse(jsonString))
+}
+{
+    function getElementById(idToFind){
+        let domElement 
+        function walker(parent){
+            for (const child of parent.children){
+                if(child.id === idToFind){
+                    domElement = child
+                    throw domElement
+                }
+                walker(child)
+            }
+        }
+        try{
+            walker(document.body)
+        }catch(e){
+            return e
+        }
+    }
 }
