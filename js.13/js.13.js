@@ -60,7 +60,6 @@ function Password(parent, open){
 }
 
 
-// p.onOpenChange = open => console.log(open)
 p.setValue('qwerty')
 console.log(p.getValue())
 p.setOpen(false)

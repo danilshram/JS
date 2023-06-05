@@ -96,3 +96,121 @@ fetch('https://swapi.dev/api/people/1/')
   .then(res => res.json())
   .then(luke => jsonTable(div, luke))
 }
+
+{
+    function delay(ms){
+        function executor(fulfill, reject){ 
+            setTimeout(() => fulfill(ms), (ms = Math.random() * ms))
+        }
+        return new Promise(executor)
+   }
+   let promiseA = fetch("https://swapi.dev/api/people/2/").then(res => res.json()).then(info => console.log(info))
+   let promiseB = delay(100).then(time => console.log(`"Пройшло :${time.toFixed(3)} мілісекунд"`))
+   Promise.race([promiseA, promiseB]).then(result => console.log(result))
+}
+
+{
+    function confirmPromise(text){
+        return new Promise((fullfil, reject) => {
+            let result = confirm(text)
+            if(result){
+                fullfil()
+            }else{
+                reject()
+            }
+   })
+}
+   confirmPromise('Проміси це складно?').then(() => console.log('не так вже й складно'),
+                                            () => console.log('respect за посидючість і уважність'))
+}
+
+{
+    function promptPromise(text){
+        return new Promise((fullfil,reject) => {
+            let result = prompt(text)
+            if(result){
+                fullfil(result)
+            }else{
+                reject()
+            }
+        })
+    }
+    promptPromise("Как тебя зовут?").then(name => console.log(`Тебя зовут ${name}`), 
+                                      () => console.log('Ну зачем морозиться, нормально же общались'))
+}
+
+{
+    function LoginPassword(parent, open){
+        let loginInput = document.createElement('input')
+        let passwordInput = document.createElement('input')
+        let checkButton = document.createElement('button')
+        checkButton.innerText = 'GO'
+        checkButton.disabled = true
+        loginInput.type = 'text'
+        this.status = open
+        parent.append(loginInput)
+        parent.append(passwordInput)
+        parent.append(checkButton)
+    
+        this.getLoginValue = function(){
+            return loginInput.value
+        }
+        this.getPasswordValue = function(){
+            return passwordInput.value
+        }
+        this.setLoginValue = function(newValue){
+            loginInput.value = newValue 
+            return loginInput.value
+        }
+        this.setPasswordValue = function(newValue){
+            return passwordInput.value = newValue
+        }
+        this.getCheckButton = function(){
+            return this.status
+        }
+        this.setCheckButton = function(status){   
+            return this.status = status  
+        }
+        this.onChange = function(){         
+            return loginInput.value
+        }
+        this.onChange2 = function(){
+            return passwordInput.value
+        }
+        this.onButtonChange = function(status){      
+            return status 
+        }
+        loginInput.oninput = () =>{
+           this.onChange(loginInput.value)
+           return Promise.resolve({login: loginInput.value, password : passwordInput.value})
+           .then(({login,password}) => console.log(`Ви ввели ${login} та ${password}`))
+        }
+        passwordInput.oninput = () => {
+            this.onChange2(passwordInput.value)    
+            if(loginInput.value !== "" && passwordInput.value !==""){
+                checkButton.disabled = false
+             }else{
+                 checkButton.disabled = true
+            }
+            return Promise.resolve({login: loginInput.value, password : passwordInput.value})
+           .then(({login,password}) => console.log(`Ви ввели ${login} та ${password}`))
+         }
+        checkButton.onclick = () =>{
+            this.setCheckButton(!this.status)
+            this.onButtonChange(this.status)
+        }
+        this.setCheckButton(open)
+ }
+ function loginPromise(parent){
+    function executor(resolve, reject){
+        const form = new LoginPassword(parent)
+        if(form){
+            resolve(form.getLoginValue(), form.getPasswordValue()) 
+        }else{
+            reject()
+        }
+    }
+    return new Promise(executor)
+}
+loginPromise(document.body).then(({login, password}) => console.log(`Ви ввели ${login} та ${password}`))
+}
