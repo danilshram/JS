@@ -1,8 +1,5 @@
 let mainDiv = document.getElementById('main-block')
-let beerDiv = document.getElementById('beer')
-let chipsDiv = document.getElementById('chips')
-let cigarsDiv = document.getElementById('cigars')
-mainDiv.innerHTML = 
+
 
 function createStore(reducer){
     let state = reducer(undefined, {})
@@ -34,16 +31,23 @@ function reducer(state, {type, what, many}) {
     if(type === "buy")
     return {
         ...state,
-        what: state[what] - many
-    }
-    if((state.beer = 0) || (state.chips = 0) || (state.cigars = 0)){
-        
+        [what]: state[what] - many
     }
     return state
 }
 const store = createStore(reducer)
 const unsubscribe = store.subscribe(() => console.log(store.getState()))
 console.log(store.getState())
-let actionBuyBeer = many =>({type: 'buy', what: 'beer', many})
-let actionBuyChips = many =>({type: 'buy', what: 'chips', many})
+function showState(parent,state){
+    return parent.innerHTML = state
+}
+store.subscribe(() => {
+    let keyValues = Object.entries(store.getState()).map(x => x.join(" "))
+    showState(mainDiv, keyValues)
+})
+
+
+let actionBuyBeer = many =>({type: 'buy', what:'beer', many})
+let actionBuyChips = many =>({type: 'buy', what:'chips', many})
 let actionBuyCigars = many =>({type: 'buy', what: 'cigars', many})
+store.dispatch(actionBuyBeer(5))
