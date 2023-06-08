@@ -102,6 +102,7 @@ console.log(str)
 }
 
 {
+    
     let readArrayOfObjects = () => {
         let arr = []
         let object = {}

@@ -168,9 +168,8 @@ domTree(document.body, table)
             return '{' + keys.join(',') + '}'
           }
          return ''
-        }
-    const arr  = [1,"string", null, undefined, {a: 15, b: 10, c: [1,2,3,4],d: undefined, e: true }, true, false]
-    
+}
+const arr  = [1,"string", null, undefined, {a: 15, b: 10, c: [1,2,3,4],d: undefined, e: true }, true, false]
 const table = {
     tagName: 'table',
     attrs: {
