@@ -39,11 +39,11 @@ function reducer(state, {type, what, many, price, cash}) {
         cash: 0
     }
     let cost = many * price
-    if(!state[what].many){
+    if(many > state[what].many || state[what].many === 0){
         alert("Закінчилось :(")
         return {
             ...state,
-            many : 0
+            [what]:{...state[what], many : 0}
         }
     }    
     if(type === "buy"){     
@@ -59,9 +59,10 @@ function reducer(state, {type, what, many, price, cash}) {
         cash: state.cash,
         case: state.case + cost
     }
-}  
-    return state
+    }   
+   return state
 }
+    
 
 const store = createStore(reducer)
 const unsubscribe = store.subscribe(() => console.log(store.getState()))
@@ -70,22 +71,24 @@ function showState(parent,state){
 }
 let texts = {}
 let showNewState = () => {
-        let keyValues = Object.entries(store.getState()).map(([key,value]) => {
+        let keyValues = Object.entries(store.getState()).forEach(([key,value]) => {
+            let{many,price} = value
             if(key === 'case'){
                 document.title = [key + ':' + value]
             }
-            if(key !== 'case' && key !== 'cash'){
+            if(key !== 'cash' && key !== 'case' && key !== 'many' && key !== 'price'){
             let text = texts[key]
             if(!text){
                 text = document.createElement('p')
                 mainDiv.append(text) 
                 texts[key] = text
-            }
-            let displayKeys = `${key} : ${value.many}`
+            }  
+            let displayKeys = `${key} : ${many} штук маємо. Ціна - ${price} ГРН`
             showState(text, displayKeys)
-        }
-        }) 
-}
+            console.log(texts)
+        }            
+    })
+} 
 showNewState()
 store.subscribe(showNewState) 
 
@@ -118,9 +121,11 @@ mainDiv.append(inputCash)
 mainDiv.append(button)
 
 storeKeys.forEach(key => {
+    if(key !== 'case' && key !== 'cash'){
     let option = document.createElement('option')
     option.innerText = key
     select.append(option)
+    }
 })
 button.onclick = () => {
     if(select.value === 'beer'){
