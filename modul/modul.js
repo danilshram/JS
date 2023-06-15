@@ -349,11 +349,15 @@ function LoginPassword(parent, open){
 }
 let header = document.getElementsByTagName("header")
 store.subscribe(() => {
+    const [,route] = location.hash.split('/')
+    if (route !== 'login') return
     const payload = store.getState().auth.payload
-    if(!payload && store.getState().type === "AUTH_LOGIN"){ 
+    if(payload){ 
+        username.innerText = payload.sub.login
+    }else{        
         username.innerText = 'Anon' 
-        username.innerHTML = `<a href="#/login/${payload.sub.login}">LOGIN</a>`
-}
+        username.innerHTML = `<a href="#/login/${payload}">LOGIN</a>`
+    }
 })
 
 
