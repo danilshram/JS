@@ -51,20 +51,17 @@ function promiseReducer(state={},  {name, type, status, payload, error}){
     return state
 }
 
-function authReducer(state={}, {type, token, payload}){
+function authReducer(state={}, {type, token}){
     if(type === "AUTH_LOGOUT"){
-        return state
+        return {}
     }
     if(type === "AUTH_LOGIN"){
-        if(!token && typeof payload !== 'object'){
-            return state
+        let payload = jwtDecode(token)
+        if(payload){
+            return {token, payload}
         }
-        return {...state, 
-            token,
-            payload: jwtDecode(token)
-        }
-}
-        return state
+    }
+    return state
 }
 
 function jwtDecode(token){ 
@@ -75,8 +72,7 @@ function jwtDecode(token){
         let normalToken = JSON.parse(tokenJSON)
         return normalToken
     }
-    catch(e){
-        return undefined
+    catch(e){ 
     }
 }
 const reducers = {
@@ -89,12 +85,14 @@ let store = createStore(totalReducer)
 
 const actionAuthLogin  = token => ({type: 'AUTH_LOGIN', token})
 const actionAuthLogout = ()    => ({type: 'AUTH_LOGOUT'})
-
+const gqlLogin = (login,password) =>{
+    return gql(`query login($login:String, $password:String){
+        login(login:$login, password:$password)
+    }`, {login, password}
+    )
+}
 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOiI2Mzc3ZTEzM2I3NGUxZjVmMmVjMWMxMjUiLCJsb2dpbiI6InRlc3Q1IiwiYWNsIjpbIjYzNzdlMTMzYjc0ZTFmNWYyZWMxYzEyNSIsInVzZXIiXX0sImlhdCI6MTY2ODgxMjQ1OH0.t1eQlRwkcP7v9JxUPMo3dcGKprH-uy8ujukNI7xE3A0"
-
-store = createStore(authReducer)
-
-store.subscribe(() => console.log(store.getState())) 
+store.subscribe(() => console.log(store.getState()))
 store.dispatch(actionAuthLogin(token))
 
 
@@ -114,10 +112,7 @@ const actionPromise = (name, promise) =>
         catch (error){
             dispatch(actionRejected(name, error)) //в случае ошибки - сигнализируем redux, что промис несложился
         }
-    }
-
-store = createStore(totalReducer) //не забудьте combineReducers если он у вас уже есть
-store.subscribe(() => console.log(store.getState()))
+}
 
 const drawGoods = (state) => {
     const [,route] = location.hash.split('/')
@@ -127,10 +122,11 @@ const drawGoods = (state) => {
         main.innerHTML = `<img src='https://cdn.dribbble.com/users/63485/screenshots/1309731/infinite-gif-preloader.gif' />`
     }
     if (status === 'FULFILLED'){
-        const {name, _id, price, description} = payload
+        const {name, _id, price, description, images} = payload
         main.innerHTML = `<h1>${name}</h1>
                          <section>Ціна: ${price}</section>
                          <section>Опис товару: ${description}</section>
+                         <img src = "http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
                          `
     }
 }
@@ -181,7 +177,7 @@ function getGql(adress){
     return function gql(query, variables ={}){
         return new Promise((resolve, rejected) =>{
             const headers ={}
-            const token = localStorage.getItem("localStoredReducer")
+            const token = store.getState().auth.token
             if(token){
                 headers["Authorization"] = `Bearer ${token}`
             }
@@ -192,22 +188,42 @@ function getGql(adress){
                     ...headers 
                 },
                 body: JSON.stringify({ query, variables }),
-            }).then(res => res.json())
-            .then(json => {
-                if(json.errors){
-                    throw new Error(json.errors.message)
-                }
-                let data = json.data
-                let keys = Object.keys(data)
-                let result = data[keys[0]]
-                resolve(result)
-            })
-            .catch(e =>{
-                rejected(e)
-            })
-            })
+                    }).then(res => res.json())
+                    .then(json => {
+                    if(json.errors){
+                        throw new Error(json.errors.message)
+                    }
+                    let data = json.data
+                    let keys = Object.keys(data)
+                    let result = data[keys[0]]
+                    resolve(result)
+                })
+                .catch(e =>{
+                    rejected(e)
+                })
+                })
         }
     }
+
+function localStoredReducer(originalReducer, localStorageKey){
+    function wrapper(state, action){
+        if(typeof state === 'undefined'){
+            let key = localStorage.getItem(localStorageKey)
+            if(JSON.parse(key)){
+                return JSON.parse(key)
+            }
+        }else{
+            try{
+                let newState = originalReducer(state,action)
+                localStorage.setItem(localStorageKey, JSON.stringify(newState))
+            }
+            catch(e){
+            }
+        }
+    }
+    return wrapper
+}
+
 let adress = 'http://shop-roles.node.ed.asmer.org.ua/graphql'
 let gql = getGql(adress)
 ;(async () => {
@@ -225,10 +241,17 @@ let gql = getGql(adress)
                         }`
     
     const token = await gql(loginQuery ,{login: "test457", password: "123123"})
-    console.log(token)
 })()
 
+const actionFullLogin = (login, password) =>
+    async dispatch => {
+        let token = await dispatch(actionPromise("gqlLogin", gqlLogin(login,password)))
+        if(jwtDecode(token)){
+            dispatch(actionAuthLogin(token))
+        }
+}
 
+// store.dispatch(actionFullLogin(login,password))
 const gqlRootCats = () => 
     gql(`query rootCats { 
             CategoryFind(query:"[{\\"parent\\": null}]"){
@@ -257,12 +280,81 @@ const gqlGoodById = (_id) =>{
       {q : JSON.stringify([{_id}])}
       )
 }
+
 const actionRootCats = () =>
 actionPromise('rootCats', gqlRootCats())
 store.dispatch(actionRootCats())
 const actionCatById = (_id) => actionPromise('catById', gqlCatById(_id)) 
 const actionGoodById = (_id) => actionPromise('goodFindOne', gqlGoodById(_id))
 
+
+function LoginPassword(parent, open){
+    let loginInput = document.createElement('input')
+    let passwordInput = document.createElement('input')
+    let checkButton = document.createElement('button')
+    checkButton.innerText = 'LOGIN'
+    checkButton.disabled = true
+    loginInput.type = 'text'
+    passwordInput.type = 'password'
+    this.status = open
+    parent.append(loginInput)
+    parent.append(passwordInput)
+    parent.append(checkButton)
+
+    this.getLoginValue = function(){
+        return loginInput.value
+    }
+    this.getPasswordValue = function(){
+        return passwordInput.value
+    }
+    this.setLoginValue = function(newValue){
+        loginInput.value = newValue 
+        return loginInput.value
+    }
+    this.setPasswordValue = function(newValue){
+        return passwordInput.value = newValue
+    }
+    this.getCheckButton = function(){
+        return this.status
+    }
+    this.setCheckButton = function(status){   
+        return this.status = status  
+    }
+    this.onChange = function(){         
+        return loginInput.value
+    }
+    this.onChange2 = function(){
+        return passwordInput.value
+    }
+    this.onButtonChange = function(status){      
+        return status 
+    }
+    loginInput.oninput = () =>{
+       this.onChange(loginInput.value)
+     }
+    passwordInput.oninput = () => {
+        this.onChange2(passwordInput.value)    
+        if(loginInput.value !== "" && passwordInput.value !==""){
+            checkButton.disabled = false
+         }else{
+             checkButton.disabled = true
+         }
+     }
+    // checkButton.onclick = () =>{
+    //     store.dispatch(actionFullLogin(loginInput.value,passwordInput.value))
+    //     this.setCheckButton(!this.status)
+    //     this.onButtonChange(this.status)
+    // }
+    this.setCheckButton(open)
+}
+let header = document.getElementsByTagName("header")
+store.subscribe(() => {
+    const payload = store.getState().auth.payload
+    if(!payload && store.getState().type === "AUTH_LOGIN"){ 
+        username.innerText = 'Anon' 
+        username.innerHTML = `<a href="#/login/${payload.sub.login}">LOGIN</a>`
+}
+})
 
 
 window.onhashchange = () => {
@@ -281,12 +373,14 @@ window.onhashchange = () => {
             store.dispatch(actionCatById(_id))
         },
         good(){
-            console.log('good', _id)
             store.dispatch(actionGoodById(_id))
         },
         login(){
-            console.log('А ТУТ ЩА ДОЛЖНА БЫТЬ ФОРМА ЛОГИНА')
-            //нарисовать форму логина, которая по нажатию кнопки Login делает store.dispatch(actionFullLogin(login, password))
+            let loginForm = new LoginPassword(username)
+            loginForm.onclick = () => {
+                store.dispatch(actionFullLogin(login,password))
+            }     
+            // LoginPassword(header)
         },
         //register(){
             ////нарисовать форму регистрации, которая по нажатию кнопки Login делает store.dispatch(actionFullRegister(login, password))

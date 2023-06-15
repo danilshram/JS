@@ -170,7 +170,7 @@ function LoginPassword(parent, open){
     }
     loginInput.oninput = () =>{
        this.onChange(loginInput.value)
-     }
+    }
      passwordInput.oninput = () => {
         this.onChange2(passwordInput.value)    
         if(loginInput.value !== "" && passwordInput.value !==""){
@@ -178,7 +178,7 @@ function LoginPassword(parent, open){
          }else{
              checkButton.disabled = true
          }
-     }
+    }
     checkButton.onclick = () =>{
         this.setCheckButton(!this.status)
         this.onButtonChange(this.status)

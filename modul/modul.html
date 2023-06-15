@@ -18,14 +18,25 @@
                 min-height: 100px;
                 background-color: #AAA;
             }
-            img {
+            #main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            a {
+                display: flex;
+                flex-direction: column;
+                align-items: center
+            }
+            a img {
                 max-width: 100px;
             }
         </style>
     </head>
     <body>
         <header>
-            <div id='cartIcon'>5</div>
+            <div id='cartIcon'></div>
+            <div id="username"></div>
         </header>
         <div id='mainContainer'>
             <aside id='aside'>
