@@ -349,13 +349,10 @@ function LoginPassword(parent, open){
 }
 let header = document.getElementsByTagName("header")
 store.subscribe(() => {
-    const [,route] = location.hash.split('/')
-    if (route !== 'login') return
     const payload = store.getState().auth.payload
     if(payload){ 
         username.innerText = payload.sub.login
     }else{        
-        username.innerText = 'Anon' 
         username.innerHTML = `<a href="#/login/${payload}">LOGIN</a>`
     }
 })
@@ -382,7 +379,7 @@ window.onhashchange = () => {
         login(){
             let loginForm = new LoginPassword(username)
             loginForm.onclick = () => {
-                store.dispatch(actionFullLogin(login,password))
+                store.dispatch(actionFullLogin(loginForm.getLoginValue(),loginForm.getPasswordValue()))
             }     
             // LoginPassword(header)
         },
