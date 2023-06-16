@@ -23,7 +23,7 @@ function createStore(reducer){
     }
 }
 
-// REDUCERS
+// REDUCERS і створення початкового стану
 function combineReducers(reducers){
     function totalReducer(state={}, action){
         const newTotalState = {}
@@ -61,9 +61,19 @@ function authReducer(state={}, {type, token}){
             return {token, payload}
         }
     }
-    return state
+    return {...state}
 }
+const reducers = {
+    promise: promiseReducer, //допилить много имен для многих промисо
+    auth: authReducer,     //часть предыдущего ДЗ
+    //cart: cartReducer,     //часть предыдущего ДЗ
+}
+const totalReducer = combineReducers(reducers)
+const store = createStore(totalReducer)
+store.subscribe(() => console.log(store.getState()))
 
+
+//Допоміжні функціі
 function jwtDecode(token){ 
     try{
         let tokenParts = token.split('.')
@@ -75,103 +85,6 @@ function jwtDecode(token){
     catch(e){ 
     }
 }
-const reducers = {
-    promise: promiseReducer, //допилить много имен для многих промисо
-    auth: authReducer,     //часть предыдущего ДЗ
-    //cart: cartReducer,     //часть предыдущего ДЗ
-}
-const totalReducer = combineReducers(reducers)
-let store = createStore(totalReducer)
-
-const actionAuthLogin  = token => ({type: 'AUTH_LOGIN', token})
-const actionAuthLogout = ()    => ({type: 'AUTH_LOGOUT'})
-const gqlLogin = (login,password) =>{
-    return gql(`query login($login:String, $password:String){
-        login(login:$login, password:$password)
-    }`, {login, password}
-    )
-}
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOiI2Mzc3ZTEzM2I3NGUxZjVmMmVjMWMxMjUiLCJsb2dpbiI6InRlc3Q1IiwiYWNsIjpbIjYzNzdlMTMzYjc0ZTFmNWYyZWMxYzEyNSIsInVzZXIiXX0sImlhdCI6MTY2ODgxMjQ1OH0.t1eQlRwkcP7v9JxUPMo3dcGKprH-uy8ujukNI7xE3A0"
-store.subscribe(() => console.log(store.getState()))
-store.dispatch(actionAuthLogin(token))
-
-
-const actionPending   = (name)      => ({name, type: 'PROMISE', status: 'PENDING'})
-const actionFulfilled = (name, payload) => ({name, type: 'PROMISE', status: 'FULFILLED', payload})
-const actionRejected  = (name, error)   => ({name, type: 'PROMISE', status: 'REJECTED',  error})
-
-//имена добавить
-const actionPromise = (name, promise) =>
-    async dispatch => { 
-        dispatch(actionPending(name)) //сигнализируем redux, что промис начался
-        try{
-            const payload = await promise //ожидаем промиса
-            dispatch(actionFulfilled(name, payload)) //сигнализируем redux, что промис успешно выполнен
-            return payload //в месте запуска store.dispatch с этим thunk можно так же получить результат промиса
-        }
-        catch (error){
-            dispatch(actionRejected(name, error)) //в случае ошибки - сигнализируем redux, что промис несложился
-        }
-}
-
-const drawGoods = (state) => {
-    const [,route] = location.hash.split('/')
-    if (route !== 'good') return
-    const {status, payload, error} = store.getState().promise.goodFindOne || {}//.имя другое
-    if (status === 'PENDING'){
-        main.innerHTML = `<img src='https://cdn.dribbble.com/users/63485/screenshots/1309731/infinite-gif-preloader.gif' />`
-    }
-    if (status === 'FULFILLED'){
-        const {name, _id, price, description, images} = payload
-        main.innerHTML = `<h1>${name}</h1>
-                         <section>Ціна: ${price}</section>
-                         <section>Опис товару: ${description}</section>
-                         <img src = "http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
-                         `
-    }
-}
-
-store.subscribe(drawGoods)
-
-store.subscribe(() => {
-    const [,route] = location.hash.split('/')
-    if (route !== 'category') return
-    const {status, payload, error} = store.getState().promise.catById || {}//.имя одно
-    if (status === 'PENDING'){
-        main.innerHTML = `<img src='https://cdn.dribbble.com/users/63485/screenshots/1309731/infinite-gif-preloader.gif' />`
-    }
-    if (status === 'FULFILLED'){
-        console.log(payload)
-        const {name, goods} = payload
-        main.innerHTML = `<h1>${name}</h1>`
-        for (const {_id, name, price, images} of goods){
-            main.innerHTML += `<a href="#/good/${_id}">${name}
-            <img src = "http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
-            </a>`
-        }
-    }
-})
-
-const actionGetPeople = id =>  //имя другое
-    actionPromise(fetch(`https://swapi.dev/api/people/${id}`).then(res => res.json()))
-
-const actionGetFilm = id => 
-    actionPromise(fetch(`https://swapi.dev/api/films/${id}`).then(res => res.json()))
-
-const actionSomePeople = () => 
-    actionPromise(fetch(`https://swapi.dev/api/people/`).then(res => res.json()))
-
-// store.dispatch(actionSomePeople())
- 
-store.subscribe(() => {
-    const {status, payload, error} = store.getState().promise.rootCats
-    if (status === 'FULFILLED' && payload){
-        aside.innerHTML = ''
-        for (const {_id, name} of payload){
-            aside.innerHTML += `<a href="#/category/${_id}">${name}</a>`
-        }
-    }
-})
 
 function getGql(adress){
     return function gql(query, variables ={}){
@@ -203,7 +116,7 @@ function getGql(adress){
                 })
                 })
         }
-    }
+}
 
 function localStoredReducer(originalReducer, localStorageKey){
     function wrapper(state, action){
@@ -223,9 +136,160 @@ function localStoredReducer(originalReducer, localStorageKey){
     }
     return wrapper
 }
-
 let adress = 'http://shop-roles.node.ed.asmer.org.ua/graphql'
 let gql = getGql(adress)
+// GQL запити
+const gqlLogin = (login,password) =>{
+    return gql(`query login($login:String, $password:String){
+        login(login:$login, password:$password)
+    }`, {login, password}
+    )
+}
+
+const gqlRootCats = () => 
+    gql(`query rootCats { 
+            CategoryFind(query:"[{\\"parent\\": null}]"){
+             _id name
+           }
+}`)
+
+const gqlCatById = (_id) =>{
+    console.log(_id, "name")
+    return gql(`query catById($q: String){
+        CategoryFindOne(query: $q){
+          name parent {_id name} 
+              subCategories{_id name}
+              goods{_id name price images{url}}
+        }
+      }`, 
+      {q : JSON.stringify([{_id}])}
+      )
+}
+
+const gqlGoodById = (_id) =>{
+    return gql(`query goodById($q: String){
+        GoodFindOne(query: $q){ 
+          _id name description price
+          images{url}
+        }
+      }`,
+      {q : JSON.stringify([{_id}])}
+      )
+}
+
+const gqlUserRegister = (login,password) =>{
+    return gql(`mutation register($login:String, $password: String){
+        UserUpsert(user: {login:$login, password: $password}){
+          login
+        }
+      }`, {login,password}
+    )
+}
+// Екшени для логіну і реєстраціі
+const actionAuthLogin  = token => ({type: 'AUTH_LOGIN', token})
+const actionAuthLogout = ()    => ({type: 'AUTH_LOGOUT'})
+const actionFullLogin = (login, password) =>
+    async dispatch => {
+        let token = await dispatch(actionPromise("gqlLogin", gqlLogin(login,password)))
+        if(jwtDecode(token)){
+            dispatch(actionAuthLogin(token))
+        }
+}
+const actionRegisterUser = (login,password) => actionPromise('registerUser', gqlUserRegister(login,password)) 
+const actionFullRegister = (login, password) =>{
+    async dispatch =>{
+        let registerInfo = await dispatch(actionRegisterUser(login,password))
+        let newToken = btoa(register)
+        if(jwtDecode(newToken)){
+            dispatch(actionFullLogin(newToken))
+        }
+    }
+}
+//Екшени для промісів
+const actionPromise = (name, promise) =>
+    async dispatch => { 
+        dispatch(actionPending(name)) //сигнализируем redux, что промис начался
+        try{
+            const payload = await promise //ожидаем промиса
+            dispatch(actionFulfilled(name, payload)) //сигнализируем redux, что промис успешно выполнен
+            return payload //в месте запуска store.dispatch с этим thunk можно так же получить результат промиса
+        }
+        catch (error){
+            dispatch(actionRejected(name, error)) //в случае ошибки - сигнализируем redux, что промис несложился
+        }
+}
+const actionPending   = (name)      => ({name, type: 'PROMISE', status: 'PENDING'})
+const actionFulfilled = (name, payload) => ({name, type: 'PROMISE', status: 'FULFILLED', payload})
+const actionRejected  = (name, error)   => ({name, type: 'PROMISE', status: 'REJECTED',  error})
+// Екшени до запитів 
+const actionRootCats = () => actionPromise('rootCats', gqlRootCats())
+store.dispatch(actionRootCats())
+const actionCatById = (_id) => actionPromise('catById', gqlCatById(_id)) 
+const actionGoodById = (_id) => actionPromise('goodFindOne', gqlGoodById(_id))
+// SUBSCRIBES для відображення
+store.subscribe(() => {
+    const {status, payload, error} = store.getState().promise.rootCats
+    if (status === 'FULFILLED' && payload){
+        aside.innerHTML = ''
+        for (const {_id, name} of payload){
+            aside.innerHTML += `<a href="#/category/${_id}">${name}</a>`
+        }
+    }
+})
+
+store.subscribe(() => {
+    const [,route] = location.hash.split('/')
+    if (route !== 'category') return
+    const {status, payload, error} = store.getState().promise.catById || {}//.имя одно
+    if (status === 'PENDING'){
+        main.innerHTML = `<img src='https://cdn.dribbble.com/users/63485/screenshots/1309731/infinite-gif-preloader.gif' />`
+    }
+    if (status === 'FULFILLED'){
+        console.log(payload)
+        const {name, goods} = payload
+        main.innerHTML = `<h1>${name}</h1>`
+        for (const {_id, name, price, images} of goods){
+            main.innerHTML += `<a href="#/good/${_id}">${name}
+            <img src = "http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
+            </a>`
+        }
+    }
+})
+
+store.subscribe(() => {
+    const payload = store.getState().auth.payload
+    if(payload){ 
+        username.innerHTML = payload.sub.login
+        let logoutButton = document.createElement('button')
+        username.appendChild(logoutButton)
+        logoutButton.innerText = 'LOGOUT'
+        logoutButton.onclick = () =>{
+            store.dispatch(actionAuthLogout())
+        }
+    }else{        
+        username.innerHTML = `<a href="#/login/">LOGIN</a>`
+    }
+})
+
+const drawGoods = (state) => {
+    const [,route] = location.hash.split('/')
+    if (route !== 'good') return
+    const {status, payload, error} = store.getState().promise.goodFindOne || {}//.имя другое
+    if (status === 'PENDING'){
+        main.innerHTML = `<img src='https://cdn.dribbble.com/users/63485/screenshots/1309731/infinite-gif-preloader.gif' />`
+    }
+    if (status === 'FULFILLED'){
+        const {name, _id, price, description, images} = payload
+        main.innerHTML = `<h1>${name}</h1>
+                         <section>Ціна: ${price}</section>
+                         <section>Опис товару: ${description}</section>
+                         <img src = "http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
+                         `
+    }
+}
+store.subscribe(drawGoods)
+
+store.dispatch(actionAuthLogout())
 ;(async () => {
     const catQuery = `query cats($q: String){
                                         CategoryFind(query: $q){
@@ -242,52 +306,7 @@ let gql = getGql(adress)
     
     const token = await gql(loginQuery ,{login: "test457", password: "123123"})
 })()
-
-const actionFullLogin = (login, password) =>
-    async dispatch => {
-        let token = await dispatch(actionPromise("gqlLogin", gqlLogin(login,password)))
-        if(jwtDecode(token)){
-            dispatch(actionAuthLogin(token))
-        }
-}
-
-// store.dispatch(actionFullLogin(login,password))
-const gqlRootCats = () => 
-    gql(`query rootCats { 
-            CategoryFind(query:"[{\\"parent\\": null}]"){
-             _id name
-           }
-}`)
-const gqlCatById = (_id) =>{
-    console.log(_id, "name")
-    return gql(`query catById($q: String){
-        CategoryFindOne(query: $q){
-          name parent {_id name} 
-              subCategories{_id name}
-              goods{_id name price images{url}}
-        }
-      }`, 
-      {q : JSON.stringify([{_id}])}
-      )
-}
-const gqlGoodById = (_id) =>{
-    return gql(`query goodById($q: String){
-        GoodFindOne(query: $q){ 
-          _id name description price
-          images{url}
-        }
-      }`,
-      {q : JSON.stringify([{_id}])}
-      )
-}
-
-const actionRootCats = () =>
-actionPromise('rootCats', gqlRootCats())
-store.dispatch(actionRootCats())
-const actionCatById = (_id) => actionPromise('catById', gqlCatById(_id)) 
-const actionGoodById = (_id) => actionPromise('goodFindOne', gqlGoodById(_id))
-
-
+// Форма логіну
 function LoginPassword(parent, open){
     let loginInput = document.createElement('input')
     let passwordInput = document.createElement('input')
@@ -296,6 +315,8 @@ function LoginPassword(parent, open){
     checkButton.disabled = true
     loginInput.type = 'text'
     passwordInput.type = 'password'
+    loginInput.placeholder = "Введіть логін"
+    passwordInput.placeholder = "Введіть пароль"
     this.status = open
     parent.append(loginInput)
     parent.append(passwordInput)
@@ -331,7 +352,13 @@ function LoginPassword(parent, open){
     }
     loginInput.oninput = () =>{
        this.onChange(loginInput.value)
-     }
+    }    
+    this.onChange = () =>{
+        return loginInput.value
+    }
+    this.onChange2 = () =>{
+        return passwordInput.value
+    } 
     passwordInput.oninput = () => {
         this.onChange2(passwordInput.value)    
         if(loginInput.value !== "" && passwordInput.value !==""){
@@ -339,29 +366,19 @@ function LoginPassword(parent, open){
          }else{
              checkButton.disabled = true
          }
-     }
-    // checkButton.onclick = () =>{
-    //     store.dispatch(actionFullLogin(loginInput.value,passwordInput.value))
-    //     this.setCheckButton(!this.status)
-    //     this.onButtonChange(this.status)
-    // }
+    }
+    if(typeof this.onclick === 'function'){
+        return this.onclick(login,password)
+    }
+    checkButton.onclick = () =>{
+        this.onclick(this.getLoginValue(), this.getPasswordValue())
+    }
     this.setCheckButton(open)
 }
-let header = document.getElementsByTagName("header")
-store.subscribe(() => {
-    const payload = store.getState().auth.payload
-    if(payload){ 
-        username.innerText = payload.sub.login
-    }else{        
-        username.innerHTML = `<a href="#/login/${payload}">LOGIN</a>`
-    }
-})
-
-
+// Функція для url
 window.onhashchange = () => {
     console.log(location.hash, "loc")
     const [,route, _id] = location.hash.split('/')
-
     const routes = {
         // people(){
         //     console.log('People', _id)
@@ -378,10 +395,9 @@ window.onhashchange = () => {
         },
         login(){
             let loginForm = new LoginPassword(username)
-            loginForm.onclick = () => {
-                store.dispatch(actionFullLogin(loginForm.getLoginValue(),loginForm.getPasswordValue()))
-            }     
-            // LoginPassword(header)
+            loginForm.onclick = (login, password) => {
+                store.dispatch(actionFullLogin(login,password))
+            }
         },
         //register(){
             ////нарисовать форму регистрации, которая по нажатию кнопки Login делает store.dispatch(actionFullRegister(login, password))
