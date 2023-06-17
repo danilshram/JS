@@ -61,7 +61,7 @@ function authReducer(state={}, {type, token}){
             return {token, payload}
         }
     }
-    return {...state}
+    return state
 }
 const reducers = {
     promise: promiseReducer, //допилить много имен для многих промисо
@@ -195,16 +195,16 @@ const actionFullLogin = (login, password) =>
             dispatch(actionAuthLogin(token))
         }
 }
-const actionRegisterUser = (login,password) => actionPromise('registerUser', gqlUserRegister(login,password)) 
-const actionFullRegister = (login, password) =>{
+// const actionRegisterUser = (login,password) => actionPromise('registerUser', gqlUserRegister(login,password)) 
+const actionFullRegister = (login, password) =>
     async dispatch =>{
-        let registerInfo = await dispatch(actionRegisterUser(login,password))
-        let newToken = btoa(register)
-        if(jwtDecode(newToken)){
-            dispatch(actionFullLogin(newToken))
+        let registerInfo = await dispatch(actionPromise('registerUser', gqlUserRegister(login,password)))
+
+        if(registerInfo){
+            dispatch(actionFullLogin(login, password))
         }
-    }
 }
+
 //Екшени для промісів
 const actionPromise = (name, promise) =>
     async dispatch => { 
@@ -265,12 +265,16 @@ store.subscribe(() => {
         logoutButton.innerText = 'LOGOUT'
         logoutButton.onclick = () =>{
             store.dispatch(actionAuthLogout())
+            window.onhashchange()
         }
     }else{        
         username.innerHTML = `<a href="#/login/">LOGIN</a>`
     }
 })
 
+store.subscribe(() => {
+        register.innerHTML = `<a href ="#/register/">REGISTER</a>`
+})
 const drawGoods = (state) => {
     const [,route] = location.hash.split('/')
     if (route !== 'good') return
@@ -289,7 +293,7 @@ const drawGoods = (state) => {
 }
 store.subscribe(drawGoods)
 
-store.dispatch(actionAuthLogout())
+
 ;(async () => {
     const catQuery = `query cats($q: String){
                                         CategoryFind(query: $q){
@@ -303,7 +307,6 @@ store.dispatch(actionAuthLogout())
     const loginQuery = `query login($login:String, $password:String){
                             	login(login:$login, password:$password)
                         }`
-    
     const token = await gql(loginQuery ,{login: "test457", password: "123123"})
 })()
 // Форма логіну
@@ -375,10 +378,113 @@ function LoginPassword(parent, open){
     }
     this.setCheckButton(open)
 }
+
+function Registration(parent){
+    let loginInput = document.createElement('input')
+    let passwordInput = document.createElement('input')
+    let checkPasswordInput = document.createElement('input')
+    let checkButton = document.createElement('button')
+    
+    checkPasswordInput.type = 'password'
+    checkPasswordInput.style.display = 'initial'
+    this.status = false
+    checkButton.innerText = 'REGISTER'
+    checkButton.disabled = true
+    loginInput.type = 'text'
+    passwordInput.type = 'password'
+    checkPasswordInput.type = 'password'
+    loginInput.placeholder = "Введіть логін"
+    passwordInput.placeholder = "Введіть пароль"
+    checkPasswordInput.placeholder = "Введіть повторно пароль"
+    parent.append(loginInput)
+    parent.append(passwordInput)
+    parent.append(checkPasswordInput)
+    parent.append(checkButton)
+
+    this.getLoginValue = function(){
+        return loginInput.value
+    }
+    this.getPasswordValue = function(){
+        return passwordInput.value
+    }
+    this.getCheckValue = function(){
+        return checkPasswordInput.value
+    }
+    this.setLoginValue = function(newValue){
+        loginInput.value = newValue 
+        return loginInput.value
+    }
+    this.setPasswordValue = function(newValue){
+        return passwordInput.value = newValue
+    }
+    this.setCheckValue = function(newValue){
+        return checkPasswordInput.value = newValue
+    }
+    this.setStyle = (style,style2) => {
+        passwordInput.style.borderColor = style
+        checkPasswordInput.style.borderColor = style2
+    }
+    this.getCheckButton = function(){
+        return this.status
+    }
+    this.setCheckButton = function(status){   
+        return this.status = status  
+    }
+    this.onChange = function(){         
+        return loginInput.value
+    }
+    this.onChange2 = function(){
+        return passwordInput.value
+    }
+    this.onChange3 = function(){
+        return checkPasswordInput.value
+    }
+    this.onButtonChange = function(status){      
+        return status 
+    }
+    loginInput.oninput = () =>{
+       this.onChange(loginInput.value)
+    }    
+    this.onChange = () =>{
+        return loginInput.value
+    }
+    this.onChange2 = () =>{
+        return passwordInput.value
+    } 
+    passwordInput.oninput = () => {
+        this.onChange2(passwordInput.value)    
+        if(loginInput.value !== "" && passwordInput.value !==""){
+            checkButton.disabled = false
+        }else{
+            checkButton.disabled = true
+        }
+         if(passwordInput.value !== checkPasswordInput.value){
+            this.setStyle('red', 'red')
+        }else{
+            this.setStyle('black','black')
+        }   
+    }
+    checkPasswordInput.oninput = () =>{
+        this.onChange3(checkPasswordInput.value)
+        if(checkPasswordInput.value !== passwordInput.value){
+            this.setStyle('red', 'red')
+        }else{
+            this.setStyle('black','black')
+        }  
+    }
+    if(typeof this.onclick === 'function'){
+        return this.onclick(login,password)
+    }
+    checkButton.onclick = () =>{
+        this.onclick(this.getLoginValue(), this.getPasswordValue(), this.getCheckValue())
+    }
+    this.setCheckButton(this.status)
+}
 // Функція для url
 window.onhashchange = () => {
     console.log(location.hash, "loc")
     const [,route, _id] = location.hash.split('/')
+    main.innerHTML = ""
     const routes = {
         // people(){
         //     console.log('People', _id)
@@ -394,14 +500,21 @@ window.onhashchange = () => {
             store.dispatch(actionGoodById(_id))
         },
         login(){
-            let loginForm = new LoginPassword(username)
+            let loginForm = new LoginPassword(main)
             loginForm.onclick = (login, password) => {
                 store.dispatch(actionFullLogin(login,password))
+                location.hash = "#/"
             }
         },
-        //register(){
-            ////нарисовать форму регистрации, которая по нажатию кнопки Login делает store.dispatch(actionFullRegister(login, password))
-        //},
+        register(){
+            let registerForm = new Registration(main)
+            registerForm.onclick = (login,password) => {
+                store.dispatch(actionFullRegister(login,password))
+                register.innerHTML = ''
+                location.hash = "#/"
+            }
+            //нарисовать форму регистрации, которая по нажатию кнопки Login делает store.dispatch(actionFullRegister(login, password))
+        },
     }
     if (route in routes){
         routes[route]()

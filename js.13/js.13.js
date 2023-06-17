@@ -256,9 +256,9 @@ function PasswordVerify(parent){
     passwordInput.oninput = () => {
         this.onChange(passwordInput.value)
         if(passwordInput.value !== checkPasswordInput.value){
-        this.setStyle('red', 'red')
+            this.setStyle('red', 'red')
         }else{
-        this.setStyle('black','black')
+            this.setStyle('black','black')
         }   
     }
     checkbox.onclick = () =>{        
