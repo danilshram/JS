@@ -63,14 +63,88 @@ function authReducer(state={}, {type, token}){
     }
     return state
 }
+function cartReducer(state = {}, {type,_id, count, good}){
+    if(type === "CART_ADD"){
+        if(state[good]){
+            return {
+                ...state,
+                [good]: {
+                    ...state[good],
+                    count: state[good].count 
+                }
+            }
+        }else{
+            return {
+                ...state,
+                [good]: {
+                    count
+                }
+            }
+        }
+    }
+    if(type === 'CART_SUB'){ 
+        if(state[good].count <= 0){
+            let newState = {...state}
+            delete newState[good]
+            return newState
+        }
+        if(state[good]){
+            return {
+                ...state,
+                [good]: {
+                    ...state[good],
+                    count: state[good].count - count
+                }
+            }
+        }
+    }
+    if(type === 'CART_DEL'){
+        let newState = {...state}
+        delete newState[good]
+        return newState
+    }
+    if(type === 'CART_SET'){
+        if(state[good].count <= 0){
+            let newState = {...state}
+            delete newState[good]
+            return newState
+        }
+        if(state[good]){
+            return{
+                ...state,
+                [good]: {
+                    ...state[good],
+                    count: state[good].count + count
+                }
+            }
+        }else{
+            return {
+                ...state[good]
+            }
+        }  
+    }
+    if(type === 'CART_CLEAR'){
+        return {}
+    }
+    return state
+}
+const actionCartAdd = (good, count=1) => ({type: 'CART_ADD', count, good})
+const actionCartSub = (good, count=1) => ({type: 'CART_SUB', count, good})
+const actionCartDel = (good) => ({type: 'CART_DEL', good})
+const actionCartSet = (good, count=1) => ({type: 'CART_SET', count, good})
+const actionCartClear = () => ({type: 'CART_CLEAR'})
 const reducers = {
     promise: promiseReducer, //допилить много имен для многих промисо
     auth: authReducer,     //часть предыдущего ДЗ
-    //cart: cartReducer,     //часть предыдущего ДЗ
+    cart: cartReducer     //часть предыдущего ДЗ
 }
 const totalReducer = combineReducers(reducers)
 const store = createStore(totalReducer)
 store.subscribe(() => console.log(store.getState()))
+
+store.subscribe(() => console.log(store.getState())) //
+
+console.log(store.getState()) //{}
 
 
 //Допоміжні функціі
