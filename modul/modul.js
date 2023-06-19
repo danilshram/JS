@@ -595,6 +595,35 @@ function Registration(parent){
     }
     this.setCheckButton(this.status)
 }
+function CartButtons(parent){
+    let minusButton = document.createElement('button')
+    let numberInput = document.createElement('input')
+    let plusButton = document.createElement('button')
+    let acceptButton = document.createElement('button')
+    let deleteButton = document.createElement('button')
+    numberInput.type = 'number'
+    minusButton.innerText = "-"
+    plusButton.innerText = "+"
+    acceptButton.innerText = "Додати кількість"
+    deleteButton.innerText = "Видалити товар"
+    
+    this.getNumberImputValue = function(){
+        return numberInput.value
+    }
+    this.setNumberImputValue = function(newNumber){
+        return numberInput.value = newNumber
+    }
+    minusButton.onclick = () => this.setNumberImputValue(numberInput.value--)
+    plusButton.onclick= () => this.setNumberImputValue(numberInput.value++)
+    acceptButton.onclick = () => store.dispatch(actionCartSet(good, this.getNumberImputValue()))
+    deleteButton.onclick = () => store.dispatch(actionCartDel(good)) 
+    parent.append(minusButton)
+    parent.append(numberInput)
+    parent.append(plusButton)
+    parent.append(acceptButton)
+    parent.append(deleteButton)
+}
+
 // Функція для url
 window.onhashchange = () => {
     console.log(location.hash, "loc")
@@ -606,21 +635,21 @@ window.onhashchange = () => {
         //     store.dispatch(actionGetPeople(_id))
         // },
         cart(){
-        const cartItems = store.getState().cart;
-        let cartHTML = ""
-        for (const key in cartItems) {
-            const { good, count } = cartItems[key];
-            const { name, description, price, images } = good;
-            cartHTML += `
-                <div>
-                    Назва: ${name}.
-                    Опис: ${description}.
-                    Ціна: ${price}.
-                    <img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
-                    Кількість: ${count}
-                </div>`
-            }
-            main.innerHTML = cartHTML;
+            let buttonsDiv = document.createElement('div')
+            const helpButtons = new CartButtons(buttonsDiv)
+            main.appendChild(buttonsDiv)
+            const cartItems = store.getState().cart;
+                for (const key in cartItems) {  
+                    let { good, count } = cartItems[key];
+                    const { name, description, price, images } = good;  
+                    count = helpButtons.getNumberImputValue() || 1
+                    main.innerHTML += `
+                            Назва: ${name}.
+                            Опис: ${description}.
+                            Ціна: ${price}.
+                            <img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
+                            Кількість: ${count}`
+                    } 
         },
         category() {
             store.dispatch(actionCatById(_id))
