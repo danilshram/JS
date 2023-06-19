@@ -63,63 +63,72 @@ function authReducer(state={}, {type, token}){
     }
     return state
 }
-function cartReducer(state = {}, {type,_id, count, good}){
-    if(type === "CART_ADD"){
-        if(state[good]){
-            return {
-                ...state,
-                [good]: {
-                    ...state[good],
-                    count: state[good].count 
-                }
+function cartReducer(state = {}, {type, count, good}){
+    if (type === 'CART_ADD') {
+        id = good._id
+        if (state[id]) {
+          return {
+            ...state,
+            [id]: {
+              ...state[id],
+              count: state[id].count + count,
+              good
             }
-        }else{
-            return {
-                ...state,
-                [good]: {
-                    count
-                }
+          };
+        } else {
+          return {
+            ...state,
+            [id]: {
+              count,
+              good
             }
+          };
         }
     }
     if(type === 'CART_SUB'){ 
-        if(state[good].count <= 0){
+        if(state[id].count <= 0){
             let newState = {...state}
-            delete newState[good]
+            delete newState[id]
             return newState
         }
-        if(state[good]){
+        if(state[id]){
             return {
                 ...state,
-                [good]: {
-                    ...state[good],
-                    count: state[good].count - count
+                [id]: {
+                    ...state[id],
+                    count: state[id].count - count,
+                    good
                 }
             }
         }
     }
     if(type === 'CART_DEL'){
         let newState = {...state}
-        delete newState[good]
+        delete newState[id]
         return newState
     }
     if(type === 'CART_SET'){
-        if(state[good].count <= 0){
+        if(state[id].count <= 0){
             let newState = {...state}
-            delete newState[good]
+            delete newState[id]
             return newState
         }
-        if(state[good]){
+        if(state[id]){
             return{
                 ...state,
-                [good]: {
-                    ...state[good],
-                    count: state[good].count + count
+                [id]: {
+                    ...state[id],
+                    count: state[id].count + count,
+                    good
                 }
             }
         }else{
             return {
-                ...state[good]
+                ...state,
+                [id]:{
+                    count,
+                    good
+                }
             }
         }  
     }
@@ -141,11 +150,6 @@ const reducers = {
 const totalReducer = combineReducers(reducers)
 const store = createStore(totalReducer)
 store.subscribe(() => console.log(store.getState()))
-
-store.subscribe(() => console.log(store.getState())) //
-
-console.log(store.getState()) //{}
-
 
 //Допоміжні функціі
 function jwtDecode(token){ 
@@ -259,6 +263,30 @@ const gqlUserRegister = (login,password) =>{
       }`, {login,password}
     )
 }
+const gqlOrderFind = () =>{
+    return gql(`query historyOrders {
+        OrderFind(query: "[{}]") {
+          orderGoods {
+            goodName
+            order {
+              _id
+            }
+            owner {
+              login
+            }
+          }
+        }
+      }`
+    )
+}
+const gqlOrderUpsert = () => {
+    return gql(`mutation orderUpsert($order: OrderInput){
+        OrderUpsert(order: $order){
+          orderGoods{good{_id}, count}
+        }
+      }`, {order}
+    )
+}
 // Екшени для логіну і реєстраціі
 const actionAuthLogin  = token => ({type: 'AUTH_LOGIN', token})
 const actionAuthLogout = ()    => ({type: 'AUTH_LOGOUT'})
@@ -301,6 +329,12 @@ store.dispatch(actionRootCats())
 const actionCatById = (_id) => actionPromise('catById', gqlCatById(_id)) 
 const actionGoodById = (_id) => actionPromise('goodFindOne', gqlGoodById(_id))
 // SUBSCRIBES для відображення
+store.subscribe(() => {
+    cartIcon.innerHTML = `<a href="#/cart/"><img src = shopping-cart-icon.png></a>`
+    main.innerHTML = ""
+    const [,route] = location.hash.split('/')
+    if (route !== 'cart') return
+})
 store.subscribe(() => {
     const {status, payload, error} = store.getState().promise.rootCats
     if (status === 'FULFILLED' && payload){
@@ -347,7 +381,7 @@ store.subscribe(() => {
 })
 
 store.subscribe(() => {
-        register.innerHTML = `<a href ="#/register/">REGISTER</a>`
+    register.innerHTML = `<a href ="#/register/">REGISTER</a>`
 })
 const drawGoods = (state) => {
     const [,route] = location.hash.split('/')
@@ -357,12 +391,19 @@ const drawGoods = (state) => {
         main.innerHTML = `<img src='https://cdn.dribbble.com/users/63485/screenshots/1309731/infinite-gif-preloader.gif' />`
     }
     if (status === 'FULFILLED'){
+        
         const {name, _id, price, description, images} = payload
+        let orderButton = document.createElement('button')
+            orderButton.innerText = "Додати до кошика"
+            orderButton.onclick = () => {
+                store.dispatch(actionCartAdd(payload))
+            }
         main.innerHTML = `<h1>${name}</h1>
                          <section>Ціна: ${price}</section>
                          <section>Опис товару: ${description}</section>
                          <img src = "http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
                          `
+                         main.append(orderButton)                          
     }
 }
 store.subscribe(drawGoods)
@@ -564,14 +605,28 @@ window.onhashchange = () => {
         //     console.log('People', _id)
         //     store.dispatch(actionGetPeople(_id))
         // },
-        // films(){
-        //     store.dispatch(actionGetFilm(_id))
-        // },
+        cart(){
+        const cartItems = store.getState().cart;
+        let cartHTML = ""
+        for (const key in cartItems) {
+            const { good, count } = cartItems[key];
+            const { name, description, price, images } = good;
+            cartHTML += `
+                <div>
+                    Назва: ${name}.
+                    Опис: ${description}.
+                    Ціна: ${price}.
+                    <img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
+                    Кількість: ${count}
+                </div>`
+            }
+            main.innerHTML = cartHTML;
+        },
         category() {
             store.dispatch(actionCatById(_id))
         },
         good(){
-            store.dispatch(actionGoodById(_id))
+            store.dispatch(actionGoodById(_id)) 
         },
         login(){
             let loginForm = new LoginPassword(main)
@@ -587,7 +642,6 @@ window.onhashchange = () => {
                 register.innerHTML = ''
                 location.hash = "#/"
             }
-            //нарисовать форму регистрации, которая по нажатию кнопки Login делает store.dispatch(actionFullRegister(login, password))
         },
     }
     if (route in routes){
