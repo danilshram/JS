@@ -65,7 +65,7 @@ function authReducer(state={}, {type, token}){
 }
 function cartReducer(state = {}, {type, count, good}){
     if (type === 'CART_ADD') {
-        id = good._id
+        const id = good._id   
         if (state[id]) {
           return {
             ...state,
@@ -86,6 +86,7 @@ function cartReducer(state = {}, {type, count, good}){
         }
     }
     if(type === 'CART_SUB'){ 
+        const id = good._id 
         if(state[id].count <= 0){
             let newState = {...state}
             delete newState[id]
@@ -102,12 +103,15 @@ function cartReducer(state = {}, {type, count, good}){
             }
         }
     }
+     
     if(type === 'CART_DEL'){
+        const id = good._id 
         let newState = {...state}
         delete newState[id]
         return newState
     }
     if(type === 'CART_SET'){
+        const id = good._id 
         if(state[id].count <= 0){
             let newState = {...state}
             delete newState[id]
@@ -331,9 +335,8 @@ const actionGoodById = (_id) => actionPromise('goodFindOne', gqlGoodById(_id))
 // SUBSCRIBES для відображення
 store.subscribe(() => {
     cartIcon.innerHTML = `<a href="#/cart/"><img src = shopping-cart-icon.png></a>`
-    main.innerHTML = ""
     const [,route] = location.hash.split('/')
-    if (route !== 'cart') return
+    if (route !== 'cart') return 
 })
 store.subscribe(() => {
     const {status, payload, error} = store.getState().promise.rootCats
@@ -606,22 +609,40 @@ function CartButtons(parent){
     plusButton.innerText = "+"
     acceptButton.innerText = "Додати кількість"
     deleteButton.innerText = "Видалити товар"
-    
     this.getNumberImputValue = function(){
         return numberInput.value
     }
     this.setNumberImputValue = function(newNumber){
         return numberInput.value = newNumber
     }
-    minusButton.onclick = () => this.setNumberImputValue(numberInput.value--)
-    plusButton.onclick= () => this.setNumberImputValue(numberInput.value++)
-    acceptButton.onclick = () => store.dispatch(actionCartSet(good, this.getNumberImputValue()))
-    deleteButton.onclick = () => store.dispatch(actionCartDel(good)) 
+    this.onAcceptButton = function () {
+        if (typeof this.acceptHandler === 'function') {
+            this.acceptHandler();
+        }
+    }
+    this.onDeleteButton = function () {
+        if (typeof this.deleteHandler === 'function') {
+            this.deleteHandler();
+        }
+    }
+    numberInput.oninput = () => {
+        this.setNumberImputValue()
+    }
+    minusButton.onclick = () => {
+        let value = parseInt(numberInput.value) || 0
+        this.setNumberImputValue(value -1) 
+    }
+    plusButton.onclick= () =>{
+        let value = parseInt(numberInput.value) || 0
+        this.setNumberImputValue(value+ 1)
+    } 
+    acceptButton.onclick = () => this.onAcceptButton()
+    deleteButton.onclick = () => this.onDeleteButton()
     parent.append(minusButton)
     parent.append(numberInput)
     parent.append(plusButton)
     parent.append(acceptButton)
-    parent.append(deleteButton)
+    parent.append(deleteButton)    
 }
 
 // Функція для url
@@ -635,21 +656,34 @@ window.onhashchange = () => {
         //     store.dispatch(actionGetPeople(_id))
         // },
         cart(){
-            let buttonsDiv = document.createElement('div')
-            const helpButtons = new CartButtons(buttonsDiv)
-            main.appendChild(buttonsDiv)
             const cartItems = store.getState().cart;
-                for (const key in cartItems) {  
-                    let { good, count } = cartItems[key];
-                    const { name, description, price, images } = good;  
-                    count = helpButtons.getNumberImputValue() || 1
-                    main.innerHTML += `
-                            Назва: ${name}.
-                            Опис: ${description}.
-                            Ціна: ${price}.
-                            <img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
-                            Кількість: ${count}`
-                    } 
+            let cartContent = document.createElement('div')
+            for (const key in cartItems) {             
+                let buttonsDiv = document.createElement('div')
+                const helpButtons = new CartButtons(buttonsDiv) 
+                let { good, count } = cartItems[key];
+                const { name, description, price, images } = good; 
+                helpButtons.acceptHandler = function() {
+                    count = helpButtons.getNumberImputValue() 
+                    store.dispatch(actionCartSet(good, +count))
+                    routes.cart()
+                }
+                helpButtons.deleteHandler = function(){
+                    store.dispatch(actionCartDel(good))
+                    routes.cart()
+                } 
+                let goodDiv = document.createElement('div')
+                goodDiv.innerHTML = `
+                    Назва: ${name}.
+                    Опис: ${description}.
+                    Ціна: ${price}.
+                    <img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}">
+                    Кількість: ${count}</div> `
+                    cartContent.append(buttonsDiv)
+                    cartContent.append(goodDiv)
+            }         
+            main.innerHTML = ""
+            main.append(cartContent)
         },
         category() {
             store.dispatch(actionCatById(_id))
