@@ -146,14 +146,7 @@ const actionCartSub = (good, count=1) => ({type: 'CART_SUB', count, good})
 const actionCartDel = (good) => ({type: 'CART_DEL', good})
 const actionCartSet = (good, count=1) => ({type: 'CART_SET', count, good})
 const actionCartClear = () => ({type: 'CART_CLEAR'})
-const reducers = {
-    promise: promiseReducer, //допилить много имен для многих промисо
-    auth: authReducer,     //часть предыдущего ДЗ
-    cart: cartReducer     //часть предыдущего ДЗ
-}
-const totalReducer = combineReducers(reducers)
-const store = createStore(totalReducer)
-store.subscribe(() => console.log(store.getState()))
+
 
 //Допоміжні функціі
 function jwtDecode(token){ 
@@ -171,7 +164,7 @@ function jwtDecode(token){
 function getGql(adress){
     return function gql(query, variables ={}){
         return new Promise((resolve, rejected) =>{
-            const headers ={}
+            const headers = {}
             const token = store.getState().auth.token
             if(token){
                 headers["Authorization"] = `Bearer ${token}`
@@ -199,7 +192,6 @@ function getGql(adress){
                 })
         }
 }
-
 function localStoredReducer(originalReducer, localStorageKey){
     function wrapper(state, action){
         if(typeof state === 'undefined'){
@@ -215,9 +207,20 @@ function localStoredReducer(originalReducer, localStorageKey){
             catch(e){
             }
         }
+        return state
     }
     return wrapper
 }
+const reducers = {
+    promise: promiseReducer, //допилить много имен для многих промисо
+    auth: authReducer,     //часть предыдущего ДЗ
+    cart: cartReducer    //часть предыдущего ДЗ
+}
+const totalReducer = combineReducers(reducers)
+let store = createStore(totalReducer)
+store.subscribe(() => console.log(store.getState()))
+
+ 
 let adress = 'http://shop-roles.node.ed.asmer.org.ua/graphql'
 let gql = getGql(adress)
 // GQL запити
