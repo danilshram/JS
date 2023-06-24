@@ -167,13 +167,13 @@ function getGql(adress){
             const headers = {}
             const token = store.getState().auth.token
             if(token){
-                headers["Authorization"] = `Bearer ${token}`
+                headers['Authorization'] = `Bearer ${token}`
             }
             fetch(adress, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json", 
-                    ...headers 
+                    ...headers
                 },
                 body: JSON.stringify({ query, variables }),
                     }).then(res => res.json())
@@ -195,26 +195,23 @@ function getGql(adress){
 function localStoredReducer(originalReducer, localStorageKey){
     function wrapper(state, action){
         if(typeof state === 'undefined'){
-            let key = localStorage.getItem(localStorageKey)
-            if(JSON.parse(key)){
+            // debugger;
+            let key = localStorage[localStorageKey]
+            try{
                 return JSON.parse(key)
             }
-        }else{
-            try{
-                let newState = originalReducer(state,action)
-                localStorage.setItem(localStorageKey, JSON.stringify(newState))
-            }
-            catch(e){
-            }
+            catch(e){}
         }
-        return state
+        let newState = originalReducer(state,action)
+        localStorage.setItem(localStorageKey, JSON.stringify(newState))
+        return newState
     }
     return wrapper
 }
 const reducers = {
     promise: promiseReducer, //допилить много имен для многих промисо
-    auth: authReducer,     //часть предыдущего ДЗ
-    cart: cartReducer    //часть предыдущего ДЗ
+    auth: localStoredReducer(authReducer, 'auth'),     //часть предыдущего ДЗ
+    cart: localStoredReducer(cartReducer, 'cart')    //часть предыдущего ДЗ
 }
 const totalReducer = combineReducers(reducers)
 let store = createStore(totalReducer)
@@ -223,6 +220,7 @@ store.subscribe(() => console.log(store.getState()))
  
 let adress = 'http://shop-roles.node.ed.asmer.org.ua/graphql'
 let gql = getGql(adress)
+
 // GQL запити
 const gqlLogin = (login,password) =>{
     return gql(`query login($login:String, $password:String){
@@ -230,7 +228,7 @@ const gqlLogin = (login,password) =>{
     }`, {login, password}
     )
 }
-
+gqlLogin()
 const gqlRootCats = () => 
     gql(`query rootCats { 
             CategoryFind(query:"[{\\"parent\\": null}]"){
@@ -273,28 +271,24 @@ const gqlUserRegister = (login,password) =>{
 const gqlOrderFind = () =>{
     return gql(`query historyOrders {
         OrderFind(query: "[{}]") {
-          orderGoods {
-            goodName
-            order {
-              _id
-            }
+          orderGoods { price total count good{name}}
             owner {
               login
             }
           }
-        }
-      }`
+        }`
     )
 }
-const gqlOrderUpsert = () => {
-    return gql(`mutation orderUpsert($order: OrderInput){
-        OrderUpsert(order: $order){
-          orderGoods{good{_id}, count}
+const gqlOrderUpsert = (order) => {
+    return gql(`mutation myOrder($order: OrderInput){
+        OrderUpsert(order:$order){
+          _id
         }
-      }`, {order}
+      }`,{order}
     )
 }
-// Екшени для логіну і реєстраціі
+
+// Екшени для логіну і реєстраціі і оформлення замовлення
 const actionAuthLogin  = token => ({type: 'AUTH_LOGIN', token})
 const actionAuthLogout = ()    => ({type: 'AUTH_LOGOUT'})
 const actionFullLogin = (login, password) =>
@@ -304,13 +298,28 @@ const actionFullLogin = (login, password) =>
             dispatch(actionAuthLogin(token))
         }
 }
+
 // const actionRegisterUser = (login,password) => actionPromise('registerUser', gqlUserRegister(login,password)) 
 const actionFullRegister = (login, password) =>
-    async dispatch =>{
+    async dispatch => {
         let registerInfo = await dispatch(actionPromise('registerUser', gqlUserRegister(login,password)))
-
         if(registerInfo){
             dispatch(actionFullLogin(login, password))
+        }
+}
+const actionMakeOrder = () =>
+    async (dispatch, getState) => {
+        let orderGoods = []
+        for(let key in getState().cart){
+            const {count, good} = getState().cart[key]
+            const {_id} = good
+            let order = {count, good:{_id}}
+            orderGoods.push(order)     
+        }
+        let orderInfo = {orderGoods}
+        if(await dispatch(actionPromise('makeOrder', gqlOrderUpsert(orderInfo)))){
+                dispatch(actionCartClear())
+                main.innerHTML = ""
         }
 }
 
@@ -331,6 +340,7 @@ const actionPending   = (name)      => ({name, type: 'PROMISE', status: 'PENDING
 const actionFulfilled = (name, payload) => ({name, type: 'PROMISE', status: 'FULFILLED', payload})
 const actionRejected  = (name, error)   => ({name, type: 'PROMISE', status: 'REJECTED',  error})
 // Екшени до запитів 
+const actionOrderHistory = () => actionPromise('history', gqlOrderFind())
 const actionRootCats = () => actionPromise('rootCats', gqlRootCats())
 store.dispatch(actionRootCats())
 const actionCatById = (_id) => actionPromise('catById', gqlCatById(_id)) 
@@ -338,8 +348,10 @@ const actionGoodById = (_id) => actionPromise('goodFindOne', gqlGoodById(_id))
 // SUBSCRIBES для відображення
 store.subscribe(() => {
     cartIcon.innerHTML = `<a href="#/cart/"><img src = shopping-cart-icon.png></a>`
-    const [,route] = location.hash.split('/')
-    if (route !== 'cart') return 
+})
+store.subscribe(() =>{
+    let history = document.getElementById('history')
+    history.innerHTML = `<a href="#/history/">ORDER HISTORY</a>`
 })
 store.subscribe(() => {
     const {status, payload, error} = store.getState().promise.rootCats
@@ -415,22 +427,22 @@ const drawGoods = (state) => {
 store.subscribe(drawGoods)
 
 
-;(async () => {
-    const catQuery = `query cats($q: String){
-                                        CategoryFind(query: $q){
-                                            _id name
-                                        }
-                                    }`
-    const cats = await gql(catQuery,  {q: "[{}]"})
-    console.log(cats) //список категорій з _id name та всім таким іншим
+// ;(async () => {
+//     const catQuery = `query cats($q: String){
+//                                         CategoryFind(query: $q){
+//                                             _id name
+//                                         }
+//                                     }`
+//     const cats = await gql(catQuery,  {q: "[{}]"})
+//     console.log(cats) //список категорій з _id name та всім таким іншим
     
     
-    const loginQuery = `query login($login:String, $password:String){
-                            	login(login:$login, password:$password)
-                        }`
-    const token = await gql(loginQuery ,{login: "test457", password: "123123"})
-})()
-// Форма логіну
+//     const loginQuery = `query login($login:String, $password:String){
+//                             	login(login:$login, password:$password)
+//                         }`
+//     const token = await gql(loginQuery ,{login: "test457", password: "123123"})
+// })()
+// Форма логіну, реєстраціі і історіі замовлень
 function LoginPassword(parent, open){
     let loginInput = document.createElement('input')
     let passwordInput = document.createElement('input')
@@ -648,16 +660,28 @@ function CartButtons(parent){
     parent.append(deleteButton)    
 }
 
+function orderHistoryForm(parent){
+    let payload = store.getState().promise.history
+    let x = 0
+    for(let i = 0; i<= payload.length; i++){
+        let table = document.createElement('table')
+        table.style = 'border: 1px solid black'
+        let orderInfo = payload[i]
+        let orderGoods = orderInfo[x]
+        let{count,good,total} = orderGoods
+
+    }
+}
 // Функція для url
 window.onhashchange = () => {
     console.log(location.hash, "loc")
     const [,route, _id] = location.hash.split('/')
     main.innerHTML = ""
     const routes = {
-        // people(){
-        //     console.log('People', _id)
-        //     store.dispatch(actionGetPeople(_id))
-        // },
+        history(){
+           store.dispatch(actionPromise('history', gqlOrderFind()))
+
+        },
         cart(){
             const cartItems = store.getState().cart;
             let cartContent = document.createElement('div')
@@ -687,6 +711,12 @@ window.onhashchange = () => {
             }         
             main.innerHTML = ""
             main.append(cartContent)
+            let orderButton = document.createElement('button')
+            orderButton.innerText = 'Оформити замовлення'
+            orderButton.onclick = () => {
+                store.dispatch(actionMakeOrder())
+            }
+            main.append(orderButton)
         },
         category() {
             store.dispatch(actionCatById(_id))
