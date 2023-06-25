@@ -358,8 +358,10 @@ store.subscribe(() => {
     if(status === 'FULFILLED' && payload){
         main.innerHTML = ""
         let table = document.createElement('table')
+        let i = 0
         for(const orderGoods of payload){
             orderGoods.orderGoods.forEach(keys => {
+                console.log(keys, 'asfasfsaf')
                 let header = document.createElement('thead')
                 table.style = 'border: 1px solid black, width: 100px'
                 let headerTr = document.createElement('tr')
@@ -379,7 +381,6 @@ store.subscribe(() => {
                 let tr = document.createElement('tr')
                 tr.style = 'border: 1px solid black'
                 tableInfo.forEach(element => {
-                    
                     let td = document.createElement('td')
                     td.style = 'border: 1px solid black'
                     if(typeof element === 'object'){
@@ -470,22 +471,6 @@ const drawGoods = (state) => {
 }
 store.subscribe(drawGoods)
 
-
-// ;(async () => {
-//     const catQuery = `query cats($q: String){
-//                                         CategoryFind(query: $q){
-//                                             _id name
-//                                         }
-//                                     }`
-//     const cats = await gql(catQuery,  {q: "[{}]"})
-//     console.log(cats) //список категорій з _id name та всім таким іншим
-    
-    
-//     const loginQuery = `query login($login:String, $password:String){
-//                             	login(login:$login, password:$password)
-//                         }`
-//     const token = await gql(loginQuery ,{login: "test457", password: "123123"})
-// })()
 // Форма логіну, реєстраціі і історіі замовлень
 function LoginPassword(parent, open){
     let loginInput = document.createElement('input')
@@ -724,7 +709,6 @@ window.onhashchange = () => {
     const routes = {
         history(){
            store.dispatch(actionPromise('history', gqlOrderFind()))
-
         },
         cart(){
             const cartItems = store.getState().cart;
