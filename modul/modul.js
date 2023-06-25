@@ -349,9 +349,53 @@ const actionGoodById = (_id) => actionPromise('goodFindOne', gqlGoodById(_id))
 store.subscribe(() => {
     cartIcon.innerHTML = `<a href="#/cart/"><img src = shopping-cart-icon.png></a>`
 })
-store.subscribe(() =>{
+store.subscribe(() => {
     let history = document.getElementById('history')
     history.innerHTML = `<a href="#/history/">ORDER HISTORY</a>`
+    const [,route] = location.hash.split('/')
+    if (route !== 'history') return
+    const{status, payload, error} = store.getState().promise.history
+    if(status === 'FULFILLED' && payload){
+        main.innerHTML = ""
+        let table = document.createElement('table')
+        for(const orderGoods of payload){
+            orderGoods.orderGoods.forEach(keys => {
+                let header = document.createElement('thead')
+                table.style = 'border: 1px solid black, width: 100px'
+                let headerTr = document.createElement('tr')
+                header.style = 'border: 1px solid black'
+                headerTr.style = 'border: 1px solid black'
+                let headerInfo = Object.keys(keys)
+                headerInfo.forEach(element =>{
+                    let thHeader = document.createElement('th')
+                    thHeader.style = 'border: 1px solid black'
+                    thHeader.innerText = element
+                    headerTr.append(thHeader)
+                })
+                header.append(headerTr)
+                table.append(header)
+                let br = document.createElement('br')
+                let tableInfo = Object.values(keys)
+                let tr = document.createElement('tr')
+                tr.style = 'border: 1px solid black'
+                tableInfo.forEach(element => {
+                    
+                    let td = document.createElement('td')
+                    td.style = 'border: 1px solid black'
+                    if(typeof element === 'object'){
+                        const{name} = element
+                        td.innerText = name
+                    }else{
+                        td.innerText = element
+                    }
+                    tr.append(td)
+                    table.append(tr)
+                    table.append(br)
+                })
+                main.append(table)
+            })
+        }
+    }
 })
 store.subscribe(() => {
     const {status, payload, error} = store.getState().promise.rootCats
