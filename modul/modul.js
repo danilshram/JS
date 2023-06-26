@@ -4,8 +4,7 @@ function createStore(reducer){
     
     const getState  = () => state            //функция, возвращающая переменную из замыкания
     const subscribe = cb => (cbs.push(cb),   //запоминаем подписчиков в массиве
-                             () => cbs = cbs.filter(c => c !== cb)) //возвращаем функцию unsubscribe, которая удаляет подписчика из списка
-                             
+                             () => cbs = cbs.filter(c => c !== cb)) //возвращаем функцию unsubscribe, которая удаляет подписчика из списка   
     const dispatch  = action => { 
         if (typeof action === 'function'){ //если action - не объект, а функция
             return action(dispatch, getState) //запускаем эту функцию и даем ей dispatch и getState для работы
@@ -103,7 +102,6 @@ function cartReducer(state = {}, {type, count, good}){
             }
         }
     }
-     
     if(type === 'CART_DEL'){
         const id = good._id 
         let newState = {...state}
@@ -141,13 +139,6 @@ function cartReducer(state = {}, {type, count, good}){
     }
     return state
 }
-const actionCartAdd = (good, count=1) => ({type: 'CART_ADD', count, good})
-const actionCartSub = (good, count=1) => ({type: 'CART_SUB', count, good})
-const actionCartDel = (good) => ({type: 'CART_DEL', good})
-const actionCartSet = (good, count=1) => ({type: 'CART_SET', count, good})
-const actionCartClear = () => ({type: 'CART_CLEAR'})
-
-
 //Допоміжні функціі
 function jwtDecode(token){ 
     try{
@@ -160,7 +151,6 @@ function jwtDecode(token){
     catch(e){ 
     }
 }
-
 function getGql(adress){
     return function gql(query, variables ={}){
         return new Promise((resolve, rejected) =>{
@@ -287,8 +277,12 @@ const gqlOrderUpsert = (order) => {
       }`,{order}
     )
 }
-
 // Екшени для логіну і реєстраціі і оформлення замовлення
+const actionCartAdd = (good, count=1) => ({type: 'CART_ADD', count, good})
+const actionCartSub = (good, count=1) => ({type: 'CART_SUB', count, good})
+const actionCartDel = (good) => ({type: 'CART_DEL', good})
+const actionCartSet = (good, count=1) => ({type: 'CART_SET', count, good})
+const actionCartClear = () => ({type: 'CART_CLEAR'})
 const actionAuthLogin  = token => ({type: 'AUTH_LOGIN', token})
 const actionAuthLogout = ()    => ({type: 'AUTH_LOGOUT'})
 const actionFullLogin = (login, password) =>
@@ -358,11 +352,18 @@ store.subscribe(() => {
     if(status === 'FULFILLED' && payload){
         main.innerHTML = ""
         let table = document.createElement('table')
-        let i = 0
-        for(const orderGoods of payload){
-            orderGoods.orderGoods.forEach(keys => {
-                console.log(keys, 'asfasfsaf')
-                let header = document.createElement('thead')
+        let orderIndex = 1
+        for(const orderGoods of payload){ 
+            if(orderGoods.orderGoods.length === 0){
+                continue
+            }
+            let trOrder = document.createElement('tr')
+            let tdOrder = document.createElement('td')
+            tdOrder.innerText = 'order' + " " + orderIndex++
+            trOrder.append(tdOrder)
+            table.append(trOrder)
+            orderGoods.orderGoods.map(keys => {  
+                let header = document.createElement('tr')
                 table.style = 'border: 1px solid black, width: 100px'
                 let headerTr = document.createElement('tr')
                 header.style = 'border: 1px solid black'
@@ -374,9 +375,8 @@ store.subscribe(() => {
                     thHeader.innerText = element
                     headerTr.append(thHeader)
                 })
-                header.append(headerTr)
+                table.append(headerTr)
                 table.append(header)
-                let br = document.createElement('br')
                 let tableInfo = Object.values(keys)
                 let tr = document.createElement('tr')
                 tr.style = 'border: 1px solid black'
@@ -391,10 +391,9 @@ store.subscribe(() => {
                     }
                     tr.append(td)
                     table.append(tr)
-                    table.append(br)
                 })
-                main.append(table)
             })
+            main.append(table)
         }
     }
 })
@@ -407,7 +406,6 @@ store.subscribe(() => {
         }
     }
 })
-
 store.subscribe(() => {
     const [,route] = location.hash.split('/')
     if (route !== 'category') return
@@ -426,7 +424,6 @@ store.subscribe(() => {
         }
     }
 })
-
 store.subscribe(() => {
     const payload = store.getState().auth.payload
     if(payload){ 
@@ -442,7 +439,6 @@ store.subscribe(() => {
         username.innerHTML = `<a href="#/login/">LOGIN</a>`
     }
 })
-
 store.subscribe(() => {
     register.innerHTML = `<a href ="#/register/">REGISTER</a>`
 })
@@ -454,7 +450,6 @@ const drawGoods = (state) => {
         main.innerHTML = `<img src='https://cdn.dribbble.com/users/63485/screenshots/1309731/infinite-gif-preloader.gif' />`
     }
     if (status === 'FULFILLED'){
-        
         const {name, _id, price, description, images} = payload
         let orderButton = document.createElement('button')
             orderButton.innerText = "Додати до кошика"
@@ -470,12 +465,12 @@ const drawGoods = (state) => {
     }
 }
 store.subscribe(drawGoods)
-
 // Форма логіну, реєстраціі і історіі замовлень
 function LoginPassword(parent, open){
     let loginInput = document.createElement('input')
     let passwordInput = document.createElement('input')
     let checkButton = document.createElement('button')
+
     checkButton.innerText = 'LOGIN'
     checkButton.disabled = true
     loginInput.type = 'text'
@@ -483,10 +478,10 @@ function LoginPassword(parent, open){
     loginInput.placeholder = "Введіть логін"
     passwordInput.placeholder = "Введіть пароль"
     this.status = open
+
     parent.append(loginInput)
     parent.append(passwordInput)
     parent.append(checkButton)
-
     this.getLoginValue = function(){
         return loginInput.value
     }
@@ -540,13 +535,12 @@ function LoginPassword(parent, open){
     }
     this.setCheckButton(open)
 }
-
 function Registration(parent){
     let loginInput = document.createElement('input')
     let passwordInput = document.createElement('input')
     let checkPasswordInput = document.createElement('input')
     let checkButton = document.createElement('button')
-    
+
     checkPasswordInput.type = 'password'
     checkPasswordInput.style.display = 'initial'
     this.status = false
@@ -558,6 +552,7 @@ function Registration(parent){
     loginInput.placeholder = "Введіть логін"
     passwordInput.placeholder = "Введіть пароль"
     checkPasswordInput.placeholder = "Введіть повторно пароль"
+
     parent.append(loginInput)
     parent.append(passwordInput)
     parent.append(checkPasswordInput)
@@ -648,11 +643,13 @@ function CartButtons(parent){
     let plusButton = document.createElement('button')
     let acceptButton = document.createElement('button')
     let deleteButton = document.createElement('button')
+
     numberInput.type = 'number'
     minusButton.innerText = "-"
     plusButton.innerText = "+"
     acceptButton.innerText = "Додати кількість"
     deleteButton.innerText = "Видалити товар"
+
     this.getNumberImputValue = function(){
         return numberInput.value
     }
@@ -682,24 +679,12 @@ function CartButtons(parent){
     } 
     acceptButton.onclick = () => this.onAcceptButton()
     deleteButton.onclick = () => this.onDeleteButton()
+
     parent.append(minusButton)
     parent.append(numberInput)
     parent.append(plusButton)
     parent.append(acceptButton)
     parent.append(deleteButton)    
-}
-
-function orderHistoryForm(parent){
-    let payload = store.getState().promise.history
-    let x = 0
-    for(let i = 0; i<= payload.length; i++){
-        let table = document.createElement('table')
-        table.style = 'border: 1px solid black'
-        let orderInfo = payload[i]
-        let orderGoods = orderInfo[x]
-        let{count,good,total} = orderGoods
-
-    }
 }
 // Функція для url
 window.onhashchange = () => {
