@@ -8,8 +8,8 @@ function htmlTree(parent){
     let htmlStr = `<${tagName}`
 
     if(parent.attrs){
-        let attrs = Object.entries(parent.attrs).map(([key,value]) => `${key}=${value}`)
-        htmlStr += `${" " + attrs}` 
+        let attrs = Object.entries(parent.attrs).map(([key,value]) => `${key}="${value}"`)
+        htmlStr += " " + attrs.join()
     }
 
     if(parent.children){
@@ -21,6 +21,7 @@ function htmlTree(parent){
 
     return htmlStr
 }
+
 
 const table = {
     tagName: 'table',
@@ -59,13 +60,15 @@ const table = {
 htmlTree(table)
 }
 
+
 function domTree(parent, obj){
     let tagName = document.createElement(obj.tagName)   
     if(obj.attrs){
         let attrs = Object.entries(obj.attrs).map(([key,value]) => `${key}:${value}`)
-        tagName.style = attrs
+        for(attr in obj.attrs){
+            tagName.setAttribute(attr, obj.attrs[attr])
+        }
     }
-
     if(Array.isArray(obj.children)){
         let childs = obj.children.map(child => {
             if(typeof child === 'object'){
@@ -74,14 +77,10 @@ function domTree(parent, obj){
                 tagName.innerText = child
             }
         })
-        let childrens = childs.join("")
         tagName.append(childrens)
     }
-
     parent.append(tagName)
 }
-
-
 const table = {
     tagName: 'table',
     attrs: {
@@ -121,7 +120,7 @@ domTree(document.body, table)
 
 {
     function deepCopy(someArr){
-        if (typeof someArr === "object") {
+        if (typeof someArr === "object" && Array.isArray(someArr)) {
             return someArr
         }
         let copyArr = []
@@ -158,13 +157,13 @@ domTree(document.body, table)
           
           if (typeof something === 'object') {
             const keys = Object.keys(something).map((key) => {
-              const value = stringify(something[key])
-              if(typeof value !== 'undefined'){
-              return '"' + key + '":' + value
+            const value = stringify(something[key])
+            if(value !== 'null'){
+                return '"' + key + '":' + value
             }else{
                 return undefined
             }
-            }).filter(i => typeof i !== 'undefined');
+            }).filter(Boolean)
             return '{' + keys.join(',') + '}'
           }
          return ''
@@ -204,9 +203,10 @@ const table = {
         }
     ]
 }
-    const jsonString = stringify(arr)
+
     const jsonTable = stringify(table)
-    console.log(jsonTable)
+    console.log(jsonTable)    
+    const jsonString = stringify(arr)
     console.log(JSON.parse(jsonString))
 }
 {

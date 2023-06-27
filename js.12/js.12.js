@@ -38,20 +38,20 @@ function reducer(state, {type, what, many, price, cash}) {
         case: 0,
         cash: 0
     }
-    let cost = many * price
+    let cost = many * state[what].price
     if(many > state[what].many || state[what].many === 0){
         alert("Закінчилось :(")
         return {
             ...state,
-            [what]:{...state[what], many : 0}
+            [what]:{...state[what], many : 0},
+            case: state.case,
+            cash: state.cash
         }
     }    
     if(type === "buy"){     
         if(cash < cost || !cash){
         alert("Маловато грошей у вас")
-        return {
-            ...state
-    }
+        return state
     }
         return {
         ...state,

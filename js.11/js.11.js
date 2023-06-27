@@ -11,7 +11,11 @@ function makeProfileTimer(){
 function makeSaver(someF){
         let result = null
         return function(){
-            (result === null) ? result = someF() : undefined
+            if(someF){
+                (result === null) ? result = someF() : undefined
+            }else{
+                return
+            }
             return result
         }
 }
@@ -23,7 +27,7 @@ let myBind = function (someF, context, params){
         let i = 0
         for (let item of params){
             if(item !== undefined){
-                resultArray = [...resultArray, item]
+                resultArray.push(item)
             }else{
                 resultArray = [...resultArray, arguments[i]]
                 i++

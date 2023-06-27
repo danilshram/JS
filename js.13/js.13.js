@@ -43,14 +43,13 @@ function Password(parent, open){
             checkbox.innerText = 'Show'
         }
     }
-    this.onChange = () => {
-        return passwordInput.value
-    }
-    this.onOpenChange = function(){
-        return this.status
+    if(typeof this.onOpenChange === 'function'){
+        return this.onOpenChange()
     }
     passwordInput.oninput = function() {
-        this.onChange(passwordInput.value)
+        if(typeof this.onChange === 'function'){
+        return this.onChange()
+    }
     }
     checkbox.onclick = () =>{
         this.setOpen(!this.status)
@@ -58,12 +57,17 @@ function Password(parent, open){
     }
     this.setOpen(open)
 }
-
-
-p.setValue('qwerty')
-console.log(p.getValue())
-p.setOpen(false)
-console.log(p.getOpen())
+let passwordForm = new Password(document.body, false)
+passwordForm.onChange = () => {
+        return passwordForm.getValue()
+    }
+passwordForm.onOpenChange = function(){
+        return passwordForm.getOpen()
+    }
+passwordForm.setValue('qwerty')
+console.log(passwordForm.getValue())
+passwordForm.setOpen(false)
+console.log(passwordForm.getOpen())
 
 
 function Password(parent, open){
@@ -159,19 +163,20 @@ function LoginPassword(parent, open){
     this.setCheckButton = function(status){   
         return this.status = status  
     }
-    this.onChange = function(){         
-        return loginInput.value
+    if(typeof this.onChange === 'function'){
+        return this.onChange(loginInput.value)
     }
-    this.onChange2 = function(){
-        return passwordInput.value
+    if(typeof this.onChange2 === 'function'){
+        return this.onChange2(passwordInput.value)
     }
+
     this.onButtonChange = function(status){      
         return status 
     }
     loginInput.oninput = () =>{
        this.onChange(loginInput.value)
     }
-     passwordInput.oninput = () => {
+    passwordInput.oninput = () => {
         this.onChange2(passwordInput.value)    
         if(loginInput.value !== "" && passwordInput.value !==""){
             checkButton.disabled = false
@@ -180,12 +185,20 @@ function LoginPassword(parent, open){
          }
     }
     checkButton.onclick = () =>{
+        this.onChange(loginInput.value)
+        this.onChange2(passwordInput.value)
         this.setCheckButton(!this.status)
         this.onButtonChange(this.status)
     }
     this.setCheckButton(open)
-    }
+}
 const b = new LoginPassword(document.body, true)
+b.onChange = () => {
+    return b.getLoginValue()
+}
+b.onChange2 = () => {
+    return b.getPasswordValue()
+}
 b.setLoginValue('')
 console.log(b.getLoginValue())    
 

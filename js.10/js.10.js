@@ -72,7 +72,11 @@ farenheit(50)
             return fatherName
         }
         function getFullName (){
-            return `${name} ${surname} ${fatherName}`
+            if(fatherName){
+                return `${name} ${surname} ${fatherName}`
+            }else{
+                return `${name} ${surname}`
+            }
         }
         function setName (newName){
             let result =(x) => x.slice(0,1).toUpperCase() + x.slice(1).toLowerCase()
@@ -106,7 +110,7 @@ farenheit(50)
                 age = newAge
                 return age
             }else{
-                return undefined
+                return age
             }
         }
         function setFullName (newFullName){
@@ -356,39 +360,41 @@ function createPersonClosureDestruct(person){
 personForm(document.body, b);
 
     function getSetForm(parent, getSet){
+        debugger;
         const inputs = {} 
         const updateInputs = () => { 
             for(let fieldName in inputs){
-                let input = inputs[fieldName]
                 const getKey    = `get` + fieldName
+                let input = inputs[fieldName]
                 let value = getSet[getKey]()
                 if(value){
-                input.value = value
+                    input.value = value
                 }
             }
         }
+        parent.innerHTML = ""
         
         for (const getSetName in getSet){
             const getOrSet = getSetName.startsWith('get')
             const fieldName = getSetName.slice(3)
             const getKey    = `get` + fieldName
-            const setKey    = `set` + fieldName
             let getValue = getSet[getKey]()
             const input = document.createElement('input')
-            input.placeholder = fieldName
-            input.type = (typeof getValue === 'number') ? 'number' : 'text'
-            if(getValue && getOrSet && setKey && getKey){
-                input.value = getValue
-            }
-            input.oninput = function(){
+            if(getValue && getOrSet){
+                input.placeholder = fieldName
+                input.type = (typeof getValue === 'number') ? 'number' : 'text' 
+                input.oninput = function(){
                 const setKey    = `set` + fieldName
                 let setValue = getSet[setKey]
                 if(setValue){
                     setValue(input.value)
                     updateInputs()
                 }
-                } 
-            inputs[fieldName] = input
+            } 
+                inputs[fieldName] = input
+            }else{
+                continue
+            }
             parent.appendChild(input)
         }
         updateInputs()
