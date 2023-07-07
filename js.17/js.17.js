@@ -53,18 +53,18 @@
         const button = document.createElement('button')
         button.innerText = 'CHANGE'
         document.body.append(button)
-        
+        let green = true
         while(true){
-            let greenPromise = () => {
+            if(green){
                 greenDiv.style = 'background-color: green; height: 100px'
-                redDiv.style = 'background-color: transparent; height: 100px'
-            }
-            let redPromise = () => {
+                redDiv.style = 'background-color: transparent; height: 100px' 
+                await Promise.race([delay(2000), domEventPromise(button, 'click').then(e => delay(1000))]) 
+            }else{
                 greenDiv.style = 'background-color: transparent; height:100px'
                 redDiv.style = 'background-color: red; height: 100px'
-            }
-            const changePromise = domEventPromise(button, 'click')
-            await Promise.race([changePromise, delay(4000)])
+                await Promise.race([delay(2000), domEventPromise(button, 'click').then(e => delay(1000))])
+            }   
+            green = !green
         }
     }
     pedestrianTrafficLight()
