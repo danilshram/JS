@@ -292,7 +292,6 @@ const actionFullLogin = (login, password) =>
             dispatch(actionAuthLogin(token))
         }
 }
-
 // const actionRegisterUser = (login,password) => actionPromise('registerUser', gqlUserRegister(login,password)) 
 const actionFullRegister = (login, password) =>
     async dispatch => {
@@ -312,8 +311,8 @@ const actionMakeOrder = () =>
         }
         let orderInfo = {orderGoods}
         if(await dispatch(actionPromise('makeOrder', gqlOrderUpsert(orderInfo)))){
-                dispatch(actionCartClear())
-                main.innerHTML = ""
+            dispatch(actionCartClear())
+            main.innerHTML = ""
         }
 }
 

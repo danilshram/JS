@@ -147,6 +147,7 @@ fetch('https://swapi.dev/api/people/1/')
         checkButton.innerText = 'GO'
         checkButton.disabled = true
         loginInput.type = 'text'
+        passwordInput.type = 'password'
         this.status = open
         parent.append(loginInput)
         parent.append(passwordInput)
@@ -171,43 +172,51 @@ fetch('https://swapi.dev/api/people/1/')
         this.setCheckButton = function(status){   
             return this.status = status  
         }
-        this.onChange = function(){         
-            return loginInput.value
+        if(typeof this.onChange === 'function'){
+            return this.onChange()
         }
-        this.onChange2 = function(){
-            return passwordInput.value
+        if(typeof this.onChange2 === 'function'){
+            return this.onChange2()
         }
         this.onButtonChange = function(status){      
             return status 
         }
-        loginInput.oninput = () =>{
-           this.onChange(loginInput.value)
-           return Promise.resolve({login: loginInput.value, password : passwordInput.value})
-           .then(({login,password}) => console.log(`Ви ввели ${login} та ${password}`))
+        loginInput.oninput = this.onChange = () =>{
+            this.getLoginValue()
         }
-        passwordInput.oninput = () => {
-            this.onChange2(passwordInput.value)    
+        passwordInput.oninput = this.onChange2 = () => {  
+            this.getPasswordValue()  
             if(loginInput.value !== "" && passwordInput.value !==""){
                 checkButton.disabled = false
              }else{
                  checkButton.disabled = true
             }
-            return Promise.resolve({login: loginInput.value, password : passwordInput.value})
-           .then(({login,password}) => console.log(`Ви ввели ${login} та ${password}`))
          }
         checkButton.onclick = () =>{
             this.setCheckButton(!this.status)
             this.onButtonChange(this.status)
+            return Promise.resolve({login: loginInput.value, password : passwordInput.value})
+           .then(({login,password}) => console.log(`Ви ввели ${login} та ${password}`))
         }
         this.setCheckButton(open)
  }
+
+
+
  function loginPromise(parent){
     function executor(resolve, reject){
         const form = new LoginPassword(parent)
-        if(form){
-            resolve(form.getLoginValue(), form.getPasswordValue()) 
-        }else{
-            reject()
+        form.onChange = () =>{
+            return form.getLoginValue()
+        }
+        form.onChange2 = () =>{
+            return form.getPasswordValue()
+        }
+        try{
+            resolve(form.onChange(), form.onChange2()) 
+        }
+        catch(e){
+           return reject(e)
         }
     }
     return new Promise(executor)
